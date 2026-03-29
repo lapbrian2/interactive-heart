@@ -1,24 +1,19 @@
 import { EffectComposer, Bloom, Vignette, ToneMapping } from '@react-three/postprocessing'
 import { ToneMappingMode } from 'postprocessing'
 
-/**
- * Post-processing stack for medical illustration aesthetic.
- * Bloom for conduction glow, vignette for specimen framing,
- * tone mapping for warm clinical color grading.
- */
 export function PostProcessing() {
   return (
     <EffectComposer>
       <Bloom
-        intensity={0.8}
-        luminanceThreshold={0.85}
-        luminanceSmoothing={0.03}
+        intensity={0.3}
+        luminanceThreshold={0.92}
+        luminanceSmoothing={0.02}
         mipmapBlur
       />
       <Vignette
         eskil={false}
-        offset={0.3}
-        darkness={0.7}
+        offset={0.35}
+        darkness={0.6}
       />
       <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
     </EffectComposer>
