@@ -12,8 +12,11 @@ const OVERLAY_OPTIONS: { id: Layer; label: string }[] = [
   { id: 'valves', label: 'Valves' },
   { id: 'conduction', label: 'Conduction' },
   { id: 'coronary', label: 'Coronary' },
-  { id: 'crossSection', label: 'Cross Section' },
-  { id: 'auscultation', label: 'Auscultation' },
+  { id: 'veins', label: 'Veins' },
+  { id: 'pericardium', label: 'Pericardium' },
+  { id: 'crossSection', label: 'Cross Sec.' },
+  { id: 'auscultation', label: 'Auscultat.' },
+  { id: 'surgical', label: 'Surgical' },
 ]
 
 export function ViewControls() {
