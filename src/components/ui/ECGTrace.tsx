@@ -63,11 +63,11 @@ export function ECGTrace() {
       writeIndexRef.current++
     }
 
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.85)'
+    ctx.fillStyle = 'rgba(10, 12, 18, 0.9)'
     ctx.fillRect(0, 0, WIDTH, HEIGHT)
 
-    // Grid
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)'
+    // Grid — very subtle
+    ctx.strokeStyle = 'rgba(180, 175, 165, 0.03)'
     ctx.lineWidth = 0.5
     for (let y = 0; y < HEIGHT; y += 20) {
       ctx.beginPath()
@@ -76,9 +76,9 @@ export function ECGTrace() {
       ctx.stroke()
     }
 
-    // Waveform
-    ctx.strokeStyle = '#4caf50'
-    ctx.lineWidth = 1.5
+    // Waveform — clinical green, thinner
+    ctx.strokeStyle = '#5A9B6A'
+    ctx.lineWidth = 1.2
     ctx.beginPath()
 
     const readStart = writeIndexRef.current
