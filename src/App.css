@@ -1,0 +1,351 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: #1a1a2e;
+  overflow: hidden;
+}
+
+/* HUD Layout */
+.hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: 1fr auto;
+  padding: 24px;
+  font-family: 'Geist', system-ui, -apple-system, sans-serif;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.hud-left {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-self: center;
+  pointer-events: all;
+}
+
+.hud-right {
+  grid-column: 3;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-self: start;
+  pointer-events: all;
+}
+
+.hud-bottom {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  pointer-events: all;
+}
+
+/* Telemetry */
+.telemetry-panel {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 16px;
+  min-width: 180px;
+}
+
+.telemetry-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.telemetry-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.6;
+}
+
+.telemetry-value {
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.telemetry-phase {
+  font-size: 12px;
+}
+
+/* Valve indicators */
+.valve-indicators {
+  display: flex;
+  gap: 4px;
+}
+
+.valve {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+
+.valve.open {
+  background: rgba(76, 175, 80, 0.7);
+}
+
+.valve.closed {
+  background: rgba(244, 67, 54, 0.5);
+}
+
+/* Layer controls */
+.layer-btn {
+  display: block;
+  width: 100%;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.4);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.layer-btn.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.95);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.layer-btn:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Simulation controls */
+.simulation-controls {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 12px 20px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.control-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.control-label input[type='range'] {
+  flex: 1;
+  accent-color: #c84b4b;
+}
+
+.control-value {
+  font-variant-numeric: tabular-nums;
+  min-width: 60px;
+  text-align: right;
+}
+
+/* ECG */
+.ecg-canvas {
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  height: 80px;
+  margin: 0 auto 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+/* Annotation card */
+.annotation-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  pointer-events: all;
+}
+
+.annotation-card {
+  background: rgba(15, 15, 25, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 32px;
+  max-width: 480px;
+  width: 90%;
+  position: relative;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.annotation-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.annotation-title {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.annotation-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  opacity: 0.85;
+}
+
+.annotation-failure {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.annotation-failure h3,
+.annotation-phases h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.5;
+  margin: 0 0 8px;
+}
+
+.annotation-failure p {
+  font-size: 13px;
+  line-height: 1.5;
+  opacity: 0.8;
+}
+
+.annotation-phases {
+  margin-top: 16px;
+}
+
+.phase-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.phase-tag {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Loading / Error */
+.loading-screen,
+.error-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #1a1a2e;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.loading-heart {
+  font-size: 48px;
+  color: #c84b4b;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+.loading-text {
+  margin-top: 16px;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.error-screen button {
+  margin-top: 20px;
+  padding: 10px 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hud {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    padding: 16px;
+  }
+
+  .hud-left {
+    grid-column: 1;
+    grid-row: 1;
+    flex-direction: row;
+    align-self: start;
+    gap: 6px;
+  }
+
+  .hud-right {
+    grid-column: 1;
+    grid-row: 2;
+    flex-direction: row;
+    align-self: end;
+    gap: 12px;
+  }
+
+  .telemetry-panel {
+    min-width: auto;
+    padding: 10px;
+  }
+
+  .annotation-card {
+    padding: 24px;
+    max-width: 90%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-heart {
+    animation: none;
+  }
+}

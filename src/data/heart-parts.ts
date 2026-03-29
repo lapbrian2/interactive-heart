@@ -1,0 +1,25 @@
+export const HEART_PARTS = {
+  LEFT_VENTRICLE: 'left-ventricle',
+  RIGHT_VENTRICLE: 'right-ventricle',
+  LEFT_ATRIUM: 'left-atrium',
+  RIGHT_ATRIUM: 'right-atrium',
+  MITRAL_VALVE: 'mitral-valve',
+  TRICUSPID_VALVE: 'tricuspid-valve',
+  AORTIC_VALVE: 'aortic-valve',
+  PULMONARY_VALVE: 'pulmonary-valve',
+  AORTA: 'aorta',
+  PULMONARY_ARTERY: 'pulmonary-artery',
+  SUPERIOR_VENA_CAVA: 'superior-vena-cava',
+  INFERIOR_VENA_CAVA: 'inferior-vena-cava',
+  PULMONARY_VEINS: 'pulmonary-veins',
+  SA_NODE: 'sa-node',
+  AV_NODE: 'av-node',
+  BUNDLE_OF_HIS: 'bundle-of-his',
+  LEFT_BUNDLE_BRANCH: 'left-bundle-branch',
+  RIGHT_BUNDLE_BRANCH: 'right-bundle-branch',
+  PURKINJE_FIBERS: 'purkinje-fibers',
+  MYOCARDIUM: 'myocardium',
+  SEPTUM: 'septum',
+} as const
+
+export type HeartPartId = (typeof HEART_PARTS)[keyof typeof HEART_PARTS]
