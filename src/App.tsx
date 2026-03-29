@@ -15,7 +15,7 @@ export default function App() {
       </div>
       <ErrorBoundary>
         <Canvas
-          gl={{ antialias: true, powerPreference: 'high-performance' }}
+          gl={{ antialias: true, powerPreference: 'high-performance', localClippingEnabled: true }}
           dpr={[1, 2]}
           shadows
           camera={{ fov: 40, near: 0.1, far: 100, position: [0, 0, 5] }}
