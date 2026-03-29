@@ -11,10 +11,11 @@ export function CameraRig() {
     <OrbitControls
       enableDamping
       dampingFactor={0.05}
-      minDistance={2}
-      maxDistance={10}
+      minDistance={1.5}
+      maxDistance={8}
+      target={[0, -0.1, 0]}
       autoRotate={!prefersReducedMotion}
-      autoRotateSpeed={0.5}
+      autoRotateSpeed={0.3}
     />
   )
 }

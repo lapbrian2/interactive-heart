@@ -4,6 +4,7 @@ import { HeartScene } from './components/canvas/HeartScene'
 import { PostProcessing } from './components/canvas/PostProcessing'
 import { HUD } from './components/ui/HUD'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import { IntroOverlay } from './components/ui/IntroOverlay'
 import './App.css'
 
 export default function App() {
@@ -18,7 +19,7 @@ export default function App() {
           gl={{ antialias: true, powerPreference: 'high-performance', localClippingEnabled: true }}
           dpr={[1, 2]}
           shadows
-          camera={{ fov: 40, near: 0.1, far: 100, position: [0, 0, 5] }}
+          camera={{ fov: 45, near: 0.1, far: 100, position: [0, 0.2, 3.5] }}
         >
           <Suspense fallback={null}>
             <color attach="background" args={['#0a0c12']} />
@@ -29,6 +30,7 @@ export default function App() {
         </Canvas>
       </ErrorBoundary>
       <HUD />
+      <IntroOverlay />
     </div>
   )
 }

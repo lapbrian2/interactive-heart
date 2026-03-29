@@ -875,6 +875,116 @@
   transition: color 0.2s;
 }
 
+/* ─── Intro Overlay ─── */
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 10, 16, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 200;
+  pointer-events: all;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.intro-card {
+  background: rgba(12, 14, 22, 0.97);
+  border: 1px solid rgba(180, 175, 165, 0.1);
+  padding: 40px 48px;
+  max-width: 440px;
+  width: 90%;
+  text-align: center;
+}
+
+.intro-step-indicator {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.intro-dot {
+  width: 6px;
+  height: 6px;
+  background: rgba(180, 175, 165, 0.15);
+  transition: all 0.3s;
+}
+
+.intro-dot.active {
+  background: var(--accent-warm);
+  width: 20px;
+}
+
+.intro-dot.done {
+  background: rgba(204, 102, 68, 0.4);
+}
+
+.intro-title {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+  letter-spacing: 0.02em;
+}
+
+.intro-text {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin: 0 0 28px;
+}
+
+.intro-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.intro-skip {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: color 0.2s;
+}
+
+.intro-skip:hover {
+  color: var(--text-secondary);
+}
+
+.intro-next {
+  background: rgba(204, 102, 68, 0.12);
+  border: 1px solid rgba(204, 102, 68, 0.3);
+  color: var(--accent-warm);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 10px 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.intro-next:hover {
+  background: rgba(204, 102, 68, 0.2);
+  border-color: rgba(204, 102, 68, 0.5);
+}
+
 /* ─── Loading / Error ─── */
 .loading-screen,
 .error-screen {
