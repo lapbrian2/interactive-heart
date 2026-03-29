@@ -1,4 +1,5 @@
 import { HeartModel } from './HeartModel'
+import { HeartInterior } from './HeartInterior'
 import { Lighting } from './Lighting'
 import { CameraRig } from './CameraRig'
 import { ConductionSystem } from './ConductionSystem'
@@ -18,7 +19,7 @@ export function HeartScene() {
       <Lighting />
       <CameraRig />
       <HeartModel />
-      {/* These render at world scale — positions must match the auto-scaled model */}
+      <HeartInterior />
       <ConductionSystem />
       <BloodFlow />
       <CoronaryArteries />

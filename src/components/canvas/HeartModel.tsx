@@ -23,36 +23,102 @@ const LABELS = [
  * Generate a procedural normal map texture for muscle fiber detail.
  * Creates a subtle fibrous pattern that gives the surface organic depth.
  */
+/**
+ * 1024x1024 procedural normal map with layered muscle fiber detail:
+ * - Primary fibers: long vertical strands (myocardial fiber direction)
+ * - Secondary fibers: oblique cross-fibers (epicardial spiral pattern)
+ * - Fascia texture: fine connective tissue weave
+ * - Vascular impressions: subtle vessel indentations
+ * - Micro-noise: organic irregularity
+ */
 function createFiberNormalMap(): THREE.DataTexture {
+  const size = 1024
+  const data = new Uint8Array(size * size * 4)
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const i = (y * size + x) * 4
+      const u = x / size
+      const v = y / size
+
+      let nx = 128
+      let ny = 128
+
+      // Layer 1: Primary muscle fibers (vertical, ~0.3mm spacing)
+      const fiberAngle = Math.sin(u * 50) * 0.4
+      const primaryFiber = Math.sin((v + fiberAngle) * 180) * 15
+      nx += primaryFiber * 0.7
+
+      // Layer 2: Oblique cross-fibers (epicardial spiral, 45 degrees)
+      const oblique = Math.sin((u + v) * 120) * Math.cos((u - v) * 80) * 8
+      ny += oblique * 0.6
+
+      // Layer 3: Fascia weave (fine connective tissue)
+      const fasciaX = Math.sin(u * 300 + v * 50) * 4
+      const fasciaY = Math.sin(v * 280 + u * 40) * 4
+      nx += fasciaX * 0.4
+      ny += fasciaY * 0.4
+
+      // Layer 4: Vessel impressions (sparse, larger indentations)
+      const vesselU = Math.sin(u * 8 + 0.5) * Math.sin(v * 12 + 0.3)
+      if (Math.abs(vesselU) > 0.7) {
+        const vesselDepth = (Math.abs(vesselU) - 0.7) * 30
+        nx += vesselDepth * Math.sign(Math.cos(u * 16))
+      }
+
+      // Layer 5: Micro-noise (organic irregularity)
+      const noise = (Math.random() - 0.5) * 6
+      nx += noise
+      ny += noise * 0.7
+
+      data[i] = Math.max(0, Math.min(255, nx))
+      data[i + 1] = Math.max(0, Math.min(255, ny))
+      data[i + 2] = 255
+      data[i + 3] = 255
+    }
+  }
+
+  const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat)
+  texture.wrapS = THREE.RepeatWrapping
+  texture.wrapT = THREE.RepeatWrapping
+  texture.repeat.set(4, 4)
+  texture.needsUpdate = true
+  return texture
+}
+
+/**
+ * Procedural roughness map — varies surface glossiness to simulate
+ * wet tissue (smooth) vs dry fascia (rough) areas.
+ */
+function createRoughnessMap(): THREE.DataTexture {
   const size = 512
   const data = new Uint8Array(size * size * 4)
 
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
       const i = (y * size + x) * 4
+      const u = x / size
+      const v = y / size
 
-      // Base normal pointing up (128, 128, 255 in tangent space)
-      let nx = 128
-      let ny = 128
+      // Base roughness 0.35 (fairly glossy)
+      let roughness = 90 // ~0.35 in 0-255 range
 
-      // Fiber direction — mostly vertical with slight diagonal
-      const fiberFreq = 0.08
-      const fiberAngle = Math.sin(x * fiberFreq) * 8
-      const fiberDetail = Math.sin((y + fiberAngle) * 0.3) * Math.sin(x * 0.15 + y * 0.05) * 12
+      // Wet patches (lower roughness = more specular)
+      const wet = Math.sin(u * 12 + v * 8) * Math.cos(u * 6 - v * 10)
+      if (wet > 0.5) roughness -= 20
 
-      // Cross-hatching for connective tissue look
-      const crossHatch = Math.sin(x * 0.12 + y * 0.08) * Math.cos(x * 0.06 - y * 0.1) * 6
+      // Dry fascia patches (higher roughness)
+      const dry = Math.sin(u * 20 + 1.5) * Math.sin(v * 15 + 0.7)
+      if (dry > 0.6) roughness += 25
 
-      // Micro-texture noise
-      const noise = (Math.random() - 0.5) * 8
+      // Noise
+      roughness += (Math.random() - 0.5) * 15
 
-      nx += fiberDetail + noise
-      ny += crossHatch + noise * 0.5
-
-      data[i] = Math.max(0, Math.min(255, nx))     // R = normal X
-      data[i + 1] = Math.max(0, Math.min(255, ny)) // G = normal Y
-      data[i + 2] = 255                              // B = normal Z (up)
-      data[i + 3] = 255                              // A
+      const val = Math.max(40, Math.min(180, roughness))
+      data[i] = val
+      data[i + 1] = val
+      data[i + 2] = val
+      data[i + 3] = 255
     }
   }
 
@@ -76,6 +142,7 @@ export function HeartModel() {
   const viewMode = useSimStore((s) => s.viewMode)
 
   const fiberNormalMap = useMemo(() => createFiberNormalMap(), [])
+  const roughnessMap = useMemo(() => createRoughnessMap(), [])
 
   useMemo(() => {
     useSimStore.subscribe(
@@ -125,8 +192,9 @@ export function HeartModel() {
           map: originalMap,
           color: originalMap ? '#FFFFFF' : '#8B2020',
           normalMap: fiberNormalMap,
-          normalScale: new THREE.Vector2(0.3, 0.3),
-          roughness: 0.38,
+          normalScale: new THREE.Vector2(0.4, 0.4),
+          roughnessMap: roughnessMap,
+          roughness: 0.35,
           metalness: 0.03,
           clearcoat: 0.4,
           clearcoatRoughness: 0.12,
@@ -147,7 +215,7 @@ export function HeartModel() {
         child.receiveShadow = true
       }
     })
-  }, [scene, fiberNormalMap, crossSectionActive])
+  }, [scene, fiberNormalMap, roughnessMap, crossSectionActive])
 
   useFrame((_, delta) => {
     if (mixerRef.current) {

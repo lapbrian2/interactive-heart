@@ -815,6 +815,19 @@
   color: rgba(220, 215, 205, 0.4);
 }
 
+/* ─── Interior Labels ─── */
+.interior-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(220, 180, 160, 0.7);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+  background: rgba(10, 12, 18, 0.5);
+  padding: 2px 6px;
+}
+
 /* ─── Coronary Labels ─── */
 .coronary-label {
   font-family: var(--font-mono);
