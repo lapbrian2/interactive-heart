@@ -1,11 +1,26 @@
 import { useRef, useMemo, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { useGLTF } from '@react-three/drei'
+import { useGLTF, Html } from '@react-three/drei'
 import * as THREE from 'three'
 import { useSimStore } from '../../store/useSimStore'
 
-// Try the 3D volumetric model first
 useGLTF.preload('/models/heart2.glb')
+
+/**
+ * Anatomical labels positioned in 3D space.
+ * Each label has a position inside/on the heart and a name.
+ */
+const LABELS = [
+  { name: 'Left Ventricle', position: [-0.15, -0.2, 0.3], id: 'left-ventricle' },
+  { name: 'Right Ventricle', position: [0.2, -0.15, 0.35], id: 'right-ventricle' },
+  { name: 'Left Atrium', position: [-0.2, 0.3, -0.1], id: 'left-atrium' },
+  { name: 'Right Atrium', position: [0.25, 0.25, 0.1], id: 'right-atrium' },
+  { name: 'Aorta', position: [0.05, 0.55, 0.05], id: 'aorta' },
+  { name: 'Pulmonary Artery', position: [-0.1, 0.45, 0.2], id: 'pulmonary-artery' },
+  { name: 'Superior Vena Cava', position: [0.3, 0.5, -0.05], id: 'superior-vena-cava' },
+  { name: 'Mitral Valve', position: [-0.05, 0.05, 0.15], id: 'mitral-valve' },
+  { name: 'Tricuspid Valve', position: [0.15, 0.05, 0.2], id: 'tricuspid-valve' },
+]
 
 export function HeartModel() {
   const { scene, animations } = useGLTF('/models/heart2.glb')
@@ -46,67 +61,39 @@ export function HeartModel() {
     box.getSize(size)
     box.getCenter(center)
 
-    console.log('[HeartModel] Size:', size.x.toFixed(3), size.y.toFixed(3), size.z.toFixed(3))
-    console.log('[HeartModel] Center:', center.x.toFixed(3), center.y.toFixed(3), center.z.toFixed(3))
-
-    // Auto-scale to fit ~2.5 units in the largest dimension
     const maxDim = Math.max(size.x, size.y, size.z)
     const targetSize = 2.5
     const scaleFactor = maxDim > 0 ? targetSize / maxDim : 1
     scene.scale.setScalar(scaleFactor)
-
-    // Center the model
     scene.position.set(
       -center.x * scaleFactor,
       -center.y * scaleFactor,
       -center.z * scaleFactor
     )
 
-    console.log('[HeartModel] Scale:', scaleFactor.toFixed(3))
-
-    // Apply Netter-style anatomical materials
-    let meshCount = 0
+    // Semi-transparent tissue — see through to internal systems
     scene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
-        meshCount++
-        const n = child.name.toLowerCase()
-
-        // Classify and color each structure
-        let color = '#8B2020' // default: muscle
-        let roughness = 0.45
-        let clearcoat = 0.3
-
-        if (n.includes('aort') || n.includes('artery')) {
-          color = '#CC3333'
-          roughness = 0.35
-          clearcoat = 0.4
-        } else if (n.includes('vein') || n.includes('vena')) {
-          color = '#4A5A8A'
-          roughness = 0.4
-          clearcoat = 0.35
-        } else if (n.includes('valve') || n.includes('leaflet')) {
-          color = '#E8D8B8'
-          roughness = 0.3
-          clearcoat = 0.5
-        }
-
         child.material = new THREE.MeshPhysicalMaterial({
-          color,
-          roughness,
-          metalness: 0.03,
-          clearcoat,
+          color: '#8B2020',
+          roughness: 0.4,
+          metalness: 0.02,
+          clearcoat: 0.3,
           clearcoatRoughness: 0.15,
-          sheen: 0.25,
-          sheenColor: new THREE.Color('#FF8888'),
-          sheenRoughness: 0.4,
+          transmission: 0.35,
+          thickness: 1.5,
+          opacity: 0.7,
+          transparent: true,
           side: THREE.DoubleSide,
+          depthWrite: false,
+          sheen: 0.2,
+          sheenColor: new THREE.Color('#FF6666'),
+          sheenRoughness: 0.4,
         })
-
         child.castShadow = true
-        child.receiveShadow = true
+        child.renderOrder = 1
       }
     })
-    console.log('[HeartModel] Meshes:', meshCount)
   }, [scene])
 
   useFrame((_, delta) => {
@@ -131,13 +118,34 @@ export function HeartModel() {
 
   const handleClick = (e: any) => {
     e.stopPropagation()
-    const name = e.object?.name
-    if (name) selectStructure(name)
+    selectStructure(e.object?.name || 'left-ventricle')
   }
 
   return (
-    <group ref={groupRef} visible={muscleVisible}>
-      <primitive object={scene} onClick={handleClick} />
+    <group ref={groupRef}>
+      {/* Heart surface — semi-transparent */}
+      <group visible={muscleVisible}>
+        <primitive object={scene} onClick={handleClick} />
+      </group>
+
+      {/* 3D anatomical labels */}
+      {LABELS.map((label) => (
+        <Html
+          key={label.id}
+          position={label.position as [number, number, number]}
+          center
+          distanceFactor={5}
+          style={{ pointerEvents: 'all' }}
+        >
+          <div
+            className="anatomy-label"
+            onClick={() => selectStructure(label.id)}
+          >
+            <span className="label-dot" />
+            <span className="label-text">{label.name}</span>
+          </div>
+        </Html>
+      ))}
     </group>
   )
 }
