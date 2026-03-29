@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import { useGLTF, Html } from '@react-three/drei'
 import * as THREE from 'three'
 import { useSimStore } from '../../store/useSimStore'
+import { CROSS_SECTION_PLANE } from '../../data/clipping'
 
 useGLTF.preload('/models/heart-detailed.glb')
 
@@ -71,6 +72,7 @@ export function HeartModel() {
   const currentPhaseRef = useRef('P1')
   const selectStructure = useSimStore((s) => s.selectStructure)
   const muscleVisible = useSimStore((s) => s.activeLayers.has('muscle'))
+  const crossSectionActive = useSimStore((s) => s.activeLayers.has('crossSection'))
   const viewMode = useSimStore((s) => s.viewMode)
 
   const fiberNormalMap = useMemo(() => createFiberNormalMap(), [])
@@ -122,7 +124,6 @@ export function HeartModel() {
         child.material = new THREE.MeshPhysicalMaterial({
           map: originalMap,
           color: originalMap ? '#FFFFFF' : '#8B2020',
-          // Procedural fiber normal map for surface detail
           normalMap: fiberNormalMap,
           normalScale: new THREE.Vector2(0.3, 0.3),
           roughness: 0.38,
@@ -132,20 +133,21 @@ export function HeartModel() {
           clearcoatNormalMap: fiberNormalMap,
           clearcoatNormalScale: new THREE.Vector2(0.15, 0.15),
           side: THREE.DoubleSide,
-          // Wet tissue
           sheen: 0.25,
           sheenColor: new THREE.Color('#FF6666'),
           sheenRoughness: 0.3,
-          // Subtle iridescence for fascia-like shimmer
           iridescence: 0.1,
           iridescenceIOR: 1.3,
+          // Cross-section clipping
+          clippingPlanes: crossSectionActive ? [CROSS_SECTION_PLANE] : [],
+          clipShadows: crossSectionActive,
         })
 
         child.castShadow = true
         child.receiveShadow = true
       }
     })
-  }, [scene, fiberNormalMap])
+  }, [scene, fiberNormalMap, crossSectionActive])
 
   useFrame((_, delta) => {
     if (mixerRef.current) {
