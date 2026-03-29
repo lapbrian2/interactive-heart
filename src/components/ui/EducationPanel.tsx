@@ -56,6 +56,16 @@ export function EducationPanel() {
       </div>
 
       <div className="edu-section">
+        <h4 className="edu-section-label">Heart Sounds</h4>
+        <p className="edu-section-text">{edu.heartSound}</p>
+      </div>
+
+      <div className="edu-section">
+        <h4 className="edu-section-label">Hemodynamics</h4>
+        <p className="edu-section-text edu-pressures">{edu.pressures}</p>
+      </div>
+
+      <div className="edu-section">
         <h4 className="edu-section-label">Active Structures</h4>
         <div className="edu-structures">
           {edu.structures.map((s) => (
@@ -65,7 +75,7 @@ export function EducationPanel() {
       </div>
 
       <div className="edu-section edu-clinical">
-        <h4 className="edu-section-label">Clinical Note</h4>
+        <h4 className="edu-section-label">Clinical Pearl</h4>
         <p className="edu-section-text">{edu.clinicalNote}</p>
       </div>
 

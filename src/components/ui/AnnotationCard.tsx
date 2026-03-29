@@ -16,8 +16,8 @@ export function AnnotationCard() {
   }, [selectStructure])
 
   if (!selectedStructure) return null
-  const annotation = ANNOTATIONS[selectedStructure]
-  if (!annotation) return null
+  const a = ANNOTATIONS[selectedStructure]
+  if (!a) return null
 
   return (
     <div className="annotation-backdrop" onClick={() => selectStructure(null)}>
@@ -25,7 +25,7 @@ export function AnnotationCard() {
         className="annotation-card"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
-        aria-label={`Information about ${annotation.name}`}
+        aria-label={`Anatomy: ${a.name}`}
       >
         <button
           className="annotation-close"
@@ -34,16 +34,43 @@ export function AnnotationCard() {
         >
           &times;
         </button>
-        <h2 className="annotation-title">{annotation.name}</h2>
-        <p className="annotation-desc">{annotation.description}</p>
-        <div className="annotation-failure">
-          <h3>When It Fails</h3>
-          <p>{annotation.failureMode}</p>
+
+        <div className="annotation-header">
+          <h2 className="annotation-title">{a.name}</h2>
+          <span className="annotation-latin">{a.latinName}</span>
         </div>
+
+        <p className="annotation-desc">{a.description}</p>
+
+        <div className="annotation-grid">
+          <div className="annotation-detail">
+            <h4>Dimensions</h4>
+            <p>{a.dimensions}</p>
+          </div>
+          <div className="annotation-detail">
+            <h4>Blood Supply</h4>
+            <p>{a.bloodSupply}</p>
+          </div>
+          <div className="annotation-detail">
+            <h4>Innervation</h4>
+            <p>{a.innervation}</p>
+          </div>
+        </div>
+
+        <div className="annotation-section annotation-failure">
+          <h4>Pathology</h4>
+          <p>{a.failureMode}</p>
+        </div>
+
+        <div className="annotation-section annotation-surgical">
+          <h4>Surgical Relevance</h4>
+          <p>{a.surgicalRelevance}</p>
+        </div>
+
         <div className="annotation-phases">
-          <h3>Active During</h3>
+          <h4>Active During</h4>
           <div className="phase-tags">
-            {annotation.relatedPhases.map((p) => (
+            {a.relatedPhases.map((p) => (
               <span key={p} className="phase-tag">
                 {PHASE_NAMES[p]}
               </span>

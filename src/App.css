@@ -136,6 +136,22 @@
   color: var(--text-secondary);
 }
 
+.telemetry-divider {
+  height: 1px;
+  background: rgba(180, 175, 165, 0.06);
+  margin: 6px 0;
+}
+
+.hemo-value {
+  font-size: 12px;
+}
+
+.hemo-unit {
+  font-size: 8px;
+  opacity: 0.4;
+  letter-spacing: 0.05em;
+}
+
 /* ─── Valve Indicators ─── */
 .valve-indicators {
   display: flex;
@@ -256,15 +272,20 @@
 }
 
 .annotation-card {
-  background: rgba(15, 18, 28, 0.96);
+  background: rgba(12, 14, 22, 0.97);
   border: 1px solid rgba(180, 175, 165, 0.1);
-  padding: 36px 40px;
-  max-width: 460px;
-  width: 90%;
+  padding: 28px 32px;
+  max-width: 580px;
+  width: 92%;
+  max-height: 85vh;
+  overflow-y: auto;
+  scrollbar-width: none;
   position: relative;
   color: var(--text-primary);
   font-family: var(--font-sans);
 }
+
+.annotation-card::-webkit-scrollbar { display: none; }
 
 .annotation-close {
   position: absolute;
@@ -282,61 +303,111 @@
   color: var(--text-secondary);
 }
 
+.annotation-header {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(180, 175, 165, 0.06);
+}
+
 .annotation-title {
-  margin: 0 0 18px;
-  font-size: 18px;
+  margin: 0 0 3px;
+  font-size: 17px;
   font-weight: 400;
   letter-spacing: 0.02em;
   color: var(--text-primary);
 }
 
+.annotation-latin {
+  font-size: 11px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
 .annotation-desc {
-  font-size: 13px;
+  font-size: 11px;
   line-height: 1.7;
   font-weight: 300;
   color: var(--text-secondary);
+  margin-bottom: 16px;
 }
 
-.annotation-failure {
-  margin-top: 24px;
-  padding-top: 18px;
-  border-top: 1px solid var(--panel-border);
+.annotation-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(180, 175, 165, 0.06);
 }
 
-.annotation-failure h3,
-.annotation-phases h3 {
+.annotation-detail h4 {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 7px;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.2em;
   color: var(--text-muted);
-  margin: 0 0 10px;
+  margin: 0 0 5px;
 }
 
-.annotation-failure p {
-  font-size: 12px;
+.annotation-detail p {
+  font-size: 9px;
+  line-height: 1.5;
+  font-weight: 300;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.annotation-section {
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(180, 175, 165, 0.06);
+}
+
+.annotation-section h4,
+.annotation-phases h4 {
+  font-family: var(--font-mono);
+  font-size: 7px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  margin: 0 0 6px;
+}
+
+.annotation-section p {
+  font-size: 10px;
   line-height: 1.6;
   font-weight: 300;
   color: var(--text-secondary);
+  margin: 0;
+}
+
+.annotation-failure h4 {
+  color: rgba(200, 100, 100, 0.6);
+}
+
+.annotation-surgical h4 {
+  color: rgba(100, 160, 200, 0.6);
 }
 
 .annotation-phases {
-  margin-top: 18px;
+  margin-top: 12px;
 }
 
 .phase-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 5px;
 }
 
 .phase-tag {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 400;
   letter-spacing: 0.1em;
-  padding: 4px 10px;
+  padding: 3px 8px;
   background: rgba(220, 215, 205, 0.04);
   border: 1px solid var(--panel-border);
   color: var(--text-secondary);
@@ -424,11 +495,18 @@
 
 .edu-ecg-event {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 400;
   color: #5A9B6A;
   margin: 0;
   letter-spacing: 0.03em;
+}
+
+.edu-pressures {
+  font-family: var(--font-mono);
+  font-size: 9px !important;
+  color: rgba(160, 180, 220, 0.7) !important;
+  letter-spacing: 0.02em;
 }
 
 .edu-structures {
