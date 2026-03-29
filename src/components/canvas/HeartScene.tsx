@@ -1,4 +1,4 @@
-import { PlaceholderHeart } from './PlaceholderHeart'
+import { HeartModel } from './HeartModel'
 import { Lighting } from './Lighting'
 import { CameraRig } from './CameraRig'
 import { ConductionSystem } from './ConductionSystem'
@@ -12,7 +12,7 @@ export function HeartScene() {
     <>
       <Lighting />
       <CameraRig />
-      <PlaceholderHeart />
+      <HeartModel />
       <ConductionSystem />
       <BloodFlow />
     </>

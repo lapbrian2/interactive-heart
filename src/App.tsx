@@ -13,7 +13,7 @@ export default function App() {
         <Canvas
           gl={{ antialias: true, powerPreference: 'high-performance' }}
           dpr={[1, 2]}
-          camera={{ fov: 45, near: 0.1, far: 100, position: [0, 0, 4] }}
+          camera={{ fov: 45, near: 0.1, far: 100, position: [0, 0, 6] }}
         >
           <Suspense fallback={null}>
             <HeartScene />
