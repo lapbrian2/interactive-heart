@@ -3,6 +3,9 @@ import { Lighting } from './Lighting'
 import { CameraRig } from './CameraRig'
 import { ConductionSystem } from './ConductionSystem'
 import { BloodFlow } from './BloodFlow'
+import { CoronaryArteries } from './CoronaryArteries'
+import { CrossSection } from './CrossSection'
+import { AuscultationPoints } from './AuscultationPoints'
 import { useCardiacCycle } from '../../hooks/useCardiacCycle'
 import { useHeartSounds } from '../../hooks/useHeartSounds'
 
@@ -17,6 +20,9 @@ export function HeartScene() {
       <HeartModel />
       <ConductionSystem />
       <BloodFlow />
+      <CoronaryArteries />
+      <CrossSection />
+      <AuscultationPoints />
     </>
   )
 }

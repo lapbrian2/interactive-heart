@@ -40,18 +40,14 @@ export function computeCycleState(
     accumulated = phaseEnd
   }
 
-  return {
-    phase: 'P7',
-    t: 1,
-    cycleElapsed,
-    cycleCount,
-    phaseDurations,
-  }
+  return { phase: 'P7', t: 1, cycleElapsed, cycleCount, phaseDurations }
 }
 
 export function useCardiacCycle() {
   const totalElapsedRef = useRef(0)
   const bpmRef = useRef(72)
+  const pausedRef = useRef(false)
+  const scrubRef = useRef<number | null>(null)
   const stateRef = useRef<CardiacCycleState>({
     phase: 'P1',
     t: 0,
@@ -61,17 +57,34 @@ export function useCardiacCycle() {
   })
 
   useMemo(() => {
-    return useSimStore.subscribe(
-      (s) => s.bpm,
-      (bpm) => {
-        bpmRef.current = bpm
-      }
-    )
+    useSimStore.subscribe((s) => s.bpm, (bpm) => { bpmRef.current = bpm })
+    useSimStore.subscribe((s) => s.isPaused, (p) => { pausedRef.current = p })
+    useSimStore.subscribe((s) => s.scrubPosition, (s) => { scrubRef.current = s })
   }, [])
 
   useFrame((_, delta) => {
+    const bpm = bpmRef.current
+    const phaseDurations = computePhaseDurations(bpm)
+    const cycleDuration = phaseDurations.reduce((a, b) => a + b, 0)
+
+    // If scrubbing, use manual position
+    if (scrubRef.current !== null) {
+      const manualElapsed = scrubRef.current * cycleDuration
+      const state = computeCycleState(manualElapsed, bpm)
+      stateRef.current = state
+      useSimStore.setState({
+        currentPhase: state.phase,
+        phaseProgress: state.t,
+        cycleElapsed: state.cycleElapsed,
+      })
+      return
+    }
+
+    // If paused, don't advance
+    if (pausedRef.current) return
+
     totalElapsedRef.current += delta * 1000
-    const state = computeCycleState(totalElapsedRef.current, bpmRef.current)
+    const state = computeCycleState(totalElapsedRef.current, bpm)
     stateRef.current = state
 
     useSimStore.setState({
