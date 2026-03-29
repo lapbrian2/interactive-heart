@@ -31,7 +31,7 @@ export const useSimStore = create<SimState>()(
   subscribeWithSelector((set) => ({
     bpm: 72,
     arrhythmia: 'sinus' as ArrhythmiaType,
-    activeLayers: new Set<Layer>(['muscle', 'valves', 'conduction']),
+    activeLayers: new Set<Layer>(['muscle']),
     selectedStructure: null,
     currentPhase: 'P1' as Phase,
     phaseProgress: 0,
