@@ -72,10 +72,11 @@
   grid-row: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  align-self: end;
-  padding-bottom: 60px;
+  gap: 12px;
+  align-self: start;
+  margin-top: 48px;
   pointer-events: all;
+  max-width: 320px;
 }
 
 .hud-right {
@@ -339,6 +340,133 @@
   background: rgba(220, 215, 205, 0.04);
   border: 1px solid var(--panel-border);
   color: var(--text-secondary);
+}
+
+/* ─── Education Panel ─── */
+.education-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  padding: 20px;
+  backdrop-filter: blur(12px);
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.edu-phase-indicator {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(180, 175, 165, 0.06);
+}
+
+.edu-phase-number {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--accent-warm);
+  padding: 2px 6px;
+  border: 1px solid rgba(204, 102, 68, 0.3);
+}
+
+.edu-phase-title {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.edu-event {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  opacity: 0.9;
+}
+
+.edu-section {
+  margin-bottom: 14px;
+}
+
+.edu-section-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  margin: 0 0 6px;
+}
+
+.edu-section-text {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.edu-ecg-event {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  color: #5A9B6A;
+  margin: 0;
+  letter-spacing: 0.03em;
+}
+
+.edu-structures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.edu-structure-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  background: rgba(204, 102, 68, 0.08);
+  border: 1px solid rgba(204, 102, 68, 0.15);
+  color: rgba(220, 180, 160, 0.8);
+}
+
+.edu-clinical {
+  padding-top: 12px;
+  border-top: 1px solid rgba(180, 175, 165, 0.06);
+}
+
+.edu-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(180, 175, 165, 0.06);
+}
+
+.edu-bpm {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.edu-cycle-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
 }
 
 /* ─── 3D Anatomy Labels ─── */

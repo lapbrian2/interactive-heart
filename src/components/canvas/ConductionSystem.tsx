@@ -47,7 +47,7 @@ export function ConductionSystem() {
       new THREE.Vector3(0.2, -0.2, 0.2),    // right ventricular wall
     ]
     const curve = new THREE.CatmullRomCurve3(points)
-    return new THREE.TubeGeometry(curve, 80, 0.015, 8, false)
+    return new THREE.TubeGeometry(curve, 80, 0.02, 8, false)
   }, [])
 
   // Left bundle branch — forks at the septum
@@ -61,7 +61,7 @@ export function ConductionSystem() {
       new THREE.Vector3(-0.25, -0.2, 0.15), // fans upward
     ]
     const curve = new THREE.CatmullRomCurve3(points)
-    return new THREE.TubeGeometry(curve, 60, 0.012, 8, false)
+    return new THREE.TubeGeometry(curve, 60, 0.016, 8, false)
   }, [])
 
   useFrame(({ clock }) => {
