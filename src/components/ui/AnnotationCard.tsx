@@ -57,6 +57,13 @@ export function AnnotationCard() {
           </div>
         </div>
 
+        {a.ecgTerritory && (
+          <div className="annotation-section annotation-ecg-territory">
+            <h4>ECG Territory</h4>
+            <p>{a.ecgTerritory}</p>
+          </div>
+        )}
+
         <div className="annotation-section annotation-failure">
           <h4>Pathology</h4>
           <p>{a.failureMode}</p>

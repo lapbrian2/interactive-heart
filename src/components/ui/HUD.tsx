@@ -3,6 +3,7 @@ import { ECGTrace } from './ECGTrace'
 import { EducationPanel } from './EducationPanel'
 import { ViewControls } from './ViewControls'
 import { WiggersDiagram } from './WiggersDiagram'
+import { PVLoop } from './PVLoop'
 import { AnnotationCard } from './AnnotationCard'
 import { useSimStore } from '../../store/useSimStore'
 
@@ -27,6 +28,7 @@ export function HUD() {
       <div className="hud-bottom">
         <div className="bottom-panels">
           <ECGTrace />
+          <PVLoop />
           <WiggersDiagram />
         </div>
       </div>

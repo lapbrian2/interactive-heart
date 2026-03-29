@@ -382,6 +382,10 @@
   margin: 0;
 }
 
+.annotation-ecg-territory h4 {
+  color: rgba(90, 155, 106, 0.6);
+}
+
 .annotation-failure h4 {
   color: rgba(200, 100, 100, 0.6);
 }
@@ -765,8 +769,14 @@
 /* Wiggers diagram */
 .wiggers-canvas {
   display: block;
-  width: 100%;
-  max-width: 500px;
+  max-width: 440px;
+  height: 200px;
+  border: 1px solid var(--panel-border);
+}
+
+.pv-canvas {
+  display: block;
+  max-width: 260px;
   height: 200px;
   border: 1px solid var(--panel-border);
 }

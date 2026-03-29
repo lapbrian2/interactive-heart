@@ -7,6 +7,7 @@ export interface Annotation {
   description: string
   dimensions: string
   bloodSupply: string
+  ecgTerritory?: string
   innervation: string
   failureMode: string
   surgicalRelevance: string
@@ -22,6 +23,7 @@ export const ANNOTATIONS: Record<string, Annotation> = {
       'The thickest-walled chamber (8-15mm), forming the apex and the majority of the diaphragmatic surface. Conical shape with two papillary muscles (anterolateral and posteromedial) anchoring the mitral valve via chordae tendineae. The trabeculae carneae line the inner walls. Responsible for generating systemic arterial pressure (~120/80 mmHg).',
     dimensions: 'Wall thickness: 8-15mm (3x thicker than RV). End-diastolic volume: ~120mL. End-systolic volume: ~50mL. Stroke volume: ~70mL.',
     bloodSupply: 'LAD (anterior wall, anterior 2/3 of septum), LCx (lateral and posterior walls). The LAD is the most commonly occluded vessel in MI — "the widow maker."',
+    ecgTerritory: 'LAD occlusion → ST elevation in V1-V4 (anterior MI). LCx occlusion → ST elevation in I, aVL, V5-V6 (lateral MI). Both → extensive anterior-lateral MI.',
     innervation: 'Sympathetic (T1-T4 via cardiac plexus — increases contractility). Parasympathetic (vagus — minimal effect on ventricular contractility, primarily affects rate via SA/AV nodes).',
     failureMode:
       'Left heart failure → pulmonary edema (fluid backs into lungs). Ejection fraction <40% = heart failure with reduced EF (HFrEF). Most common cause: ischemic cardiomyopathy from coronary artery disease.',
@@ -36,6 +38,7 @@ export const ANNOTATIONS: Record<string, Annotation> = {
       'Crescent-shaped chamber wrapping around the LV. Thinner walls (3-5mm) because it pumps against lower pulmonary resistance (~25/10 mmHg). Contains the moderator band (septomarginal trabecula) carrying the right bundle branch to the anterior papillary muscle. Three papillary muscles: anterior, posterior, and septal.',
     dimensions: 'Wall thickness: 3-5mm. End-diastolic volume: ~120mL (similar to LV). Generates ~1/6th the pressure of the LV.',
     bloodSupply: 'RCA (right coronary artery) — supplies the RV free wall and inferior wall. Acute marginal branches.',
+    ecgTerritory: 'RCA occlusion → ST elevation in II, III, aVF (inferior MI). May extend to RV (right-sided leads V3R-V4R). RV infarct: hypotension + clear lungs + elevated JVP.',
     innervation: 'Same cardiac plexus as LV. Sympathetic fibers increase contractility; parasympathetic fibers have minimal direct ventricular effect.',
     failureMode:
       'Right heart failure → systemic venous congestion (jugular venous distension, peripheral edema, hepatomegaly, ascites). Most common cause: left heart failure. Also: pulmonary hypertension, RV infarction, PE.',
