@@ -790,21 +790,20 @@
 }
 
 /* Auscultation labels */
-.auscultation-label {
+.ausc-card {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 6px 10px;
-  background: rgba(10, 12, 18, 0.85);
-  border: 1px solid rgba(255, 215, 0, 0.2);
-  backdrop-filter: blur(4px);
+  gap: 1px;
+  padding: 4px 8px;
+  background: rgba(15, 12, 5, 0.85);
+  border: 1px solid rgba(255, 215, 0, 0.3);
   white-space: nowrap;
 }
 
 .ausc-name {
   font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 500;
+  font-size: 10px;
+  font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #FFD700;
@@ -813,14 +812,15 @@
 .ausc-location {
   font-family: var(--font-sans);
   font-size: 8px;
-  color: rgba(220, 215, 205, 0.6);
+  font-weight: 300;
+  color: rgba(255, 215, 0, 0.5);
 }
 
 .ausc-sound {
-  font-family: var(--font-sans);
-  font-size: 8px;
-  font-style: italic;
-  color: rgba(220, 215, 205, 0.4);
+  font-family: var(--font-mono);
+  font-size: 7px;
+  color: rgba(255, 215, 0, 0.35);
+  letter-spacing: 0.05em;
 }
 
 /* ─── Interior Labels ─── */
@@ -836,14 +836,51 @@
   padding: 2px 6px;
 }
 
-/* ─── Coronary Labels ─── */
-.coronary-label {
+/* ─── Conduction Labels ─── */
+.conduction-label {
   font-family: var(--font-mono);
   font-size: 8px;
   font-weight: 500;
-  letter-spacing: 0.15em;
-  color: #FF5050;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #00DDFF;
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.5), 0 1px 4px rgba(0, 0, 0, 0.9);
+  background: rgba(0, 20, 30, 0.6);
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+
+/* ─── Coronary Labels ─── */
+.coronary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: rgba(20, 8, 8, 0.8);
+  border: 1px solid rgba(255, 32, 32, 0.3);
+  padding: 4px 8px;
+  white-space: nowrap;
+}
+
+.coronary-name {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: #FF3030;
+  letter-spacing: 0.1em;
+}
+
+.coronary-full {
+  font-family: var(--font-sans);
+  font-size: 8px;
+  font-weight: 300;
+  color: rgba(255, 150, 150, 0.7);
+}
+
+.coronary-territory {
+  font-family: var(--font-mono);
+  font-size: 7px;
+  color: rgba(255, 150, 150, 0.4);
+  letter-spacing: 0.05em;
 }
 
 /* ─── 3D Anatomy Labels ─── */

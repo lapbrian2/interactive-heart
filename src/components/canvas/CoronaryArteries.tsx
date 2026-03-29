@@ -3,72 +3,85 @@ import * as THREE from 'three'
 import { useSimStore } from '../../store/useSimStore'
 import { Html } from '@react-three/drei'
 
-/**
- * Coronary arteries — thin bright red tubes on the heart surface.
- * With labels for LAD, LCx, RCA.
- */
+const arteryMaterial = new THREE.MeshBasicMaterial({
+  color: '#FF2020',
+  transparent: true,
+  opacity: 0.95,
+  depthWrite: false,
+})
+
+const ARTERIES = [
+  {
+    name: 'LAD',
+    fullName: 'Left Anterior Descending',
+    territory: 'Anterior wall, ant. 2/3 septum',
+    labelPos: [-0.1, -0.1, 0.32] as [number, number, number],
+    points: [
+      [-0.04, 0.3, 0.25], [-0.08, 0.12, 0.28], [-0.1, 0, 0.3],
+      [-0.08, -0.2, 0.26], [-0.06, -0.4, 0.2], [-0.04, -0.55, 0.15],
+    ],
+    radius: 0.008,
+  },
+  {
+    name: 'LCx',
+    fullName: 'Left Circumflex',
+    territory: 'Lateral, posterior wall',
+    labelPos: [-0.22, 0.05, 0.08] as [number, number, number],
+    points: [
+      [-0.04, 0.3, 0.25], [-0.15, 0.2, 0.2], [-0.22, 0.1, 0.1],
+      [-0.24, -0.02, 0], [-0.2, -0.1, -0.08],
+    ],
+    radius: 0.006,
+  },
+  {
+    name: 'RCA',
+    fullName: 'Right Coronary',
+    territory: 'RV, inferior wall',
+    labelPos: [0.22, 0.08, 0.18] as [number, number, number],
+    points: [
+      [0.1, 0.32, 0.15], [0.18, 0.22, 0.18], [0.22, 0.08, 0.15],
+      [0.2, -0.05, 0.08], [0.15, -0.2, 0], [0.08, -0.3, -0.04],
+    ],
+    radius: 0.007,
+  },
+  {
+    name: 'PDA',
+    fullName: 'Posterior Descending',
+    territory: 'Posterior septum, inferior wall',
+    labelPos: [0.05, -0.35, -0.06] as [number, number, number],
+    points: [
+      [0.08, -0.3, -0.04], [0.02, -0.4, -0.06], [-0.03, -0.5, -0.04],
+    ],
+    radius: 0.005,
+  },
+]
+
 export function CoronaryArteries() {
   const visible = useSimStore((s) => s.activeLayers.has('coronary'))
 
-  const ladGeo = useMemo(() => {
-    const points = [
-      new THREE.Vector3(-0.04, 0.3, 0.25),
-      new THREE.Vector3(-0.08, 0.12, 0.28),
-      new THREE.Vector3(-0.1, 0, 0.3),
-      new THREE.Vector3(-0.08, -0.2, 0.26),
-      new THREE.Vector3(-0.06, -0.4, 0.2),
-      new THREE.Vector3(-0.04, -0.55, 0.15),
-    ]
-    return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 40, 0.005, 6, false)
+  const geometries = useMemo(() => {
+    return ARTERIES.map((a) => {
+      const pts = a.points.map(([x, y, z]) => new THREE.Vector3(x, y, z))
+      return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 40, a.radius, 8, false)
+    })
   }, [])
-
-  const lcxGeo = useMemo(() => {
-    const points = [
-      new THREE.Vector3(-0.04, 0.3, 0.25),
-      new THREE.Vector3(-0.15, 0.2, 0.2),
-      new THREE.Vector3(-0.22, 0.1, 0.1),
-      new THREE.Vector3(-0.24, -0.02, 0),
-      new THREE.Vector3(-0.2, -0.1, -0.08),
-    ]
-    return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 32, 0.004, 6, false)
-  }, [])
-
-  const rcaGeo = useMemo(() => {
-    const points = [
-      new THREE.Vector3(0.1, 0.32, 0.15),
-      new THREE.Vector3(0.18, 0.22, 0.18),
-      new THREE.Vector3(0.22, 0.08, 0.15),
-      new THREE.Vector3(0.2, -0.05, 0.08),
-      new THREE.Vector3(0.15, -0.2, 0),
-      new THREE.Vector3(0.08, -0.3, -0.04),
-    ]
-    return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 40, 0.0045, 6, false)
-  }, [])
-
-  const material = useMemo(() => new THREE.MeshBasicMaterial({
-    color: '#FF3030',
-    transparent: true,
-    opacity: 0.9,
-    depthWrite: false,
-  }), [])
 
   if (!visible) return null
 
   return (
     <group renderOrder={3}>
-      <mesh geometry={ladGeo} material={material} />
-      <mesh geometry={lcxGeo} material={material} />
-      <mesh geometry={rcaGeo} material={material} />
-
-      <Html position={[-0.08, -0.1, 0.3]} center distanceFactor={6} style={{ pointerEvents: 'none' }}>
-        <span className="coronary-label">LAD</span>
-      </Html>
-      <Html position={[-0.22, 0.05, 0.05]} center distanceFactor={6} style={{ pointerEvents: 'none' }}>
-        <span className="coronary-label">LCx</span>
-      </Html>
-      <Html position={[0.2, 0.1, 0.15]} center distanceFactor={6} style={{ pointerEvents: 'none' }}>
-        <span className="coronary-label">RCA</span>
-      </Html>
+      {ARTERIES.map((artery, i) => (
+        <group key={artery.name}>
+          <mesh geometry={geometries[i]} material={arteryMaterial} />
+          <Html position={artery.labelPos} center distanceFactor={5} style={{ pointerEvents: 'none' }}>
+            <div className="coronary-card">
+              <span className="coronary-name">{artery.name}</span>
+              <span className="coronary-full">{artery.fullName}</span>
+              <span className="coronary-territory">{artery.territory}</span>
+            </div>
+          </Html>
+        </group>
+      ))}
     </group>
   )
 }
