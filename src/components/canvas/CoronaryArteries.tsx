@@ -1,69 +1,74 @@
 import { useMemo } from 'react'
 import * as THREE from 'three'
 import { useSimStore } from '../../store/useSimStore'
+import { Html } from '@react-three/drei'
 
 /**
- * Coronary arteries scaled to heart-detailed.glb bounds (~2.8 units tall).
- * LAD, LCx, RCA traced on the heart surface.
+ * Coronary arteries — thin bright red tubes on the heart surface.
+ * With labels for LAD, LCx, RCA.
  */
 export function CoronaryArteries() {
   const visible = useSimStore((s) => s.activeLayers.has('coronary'))
 
   const ladGeo = useMemo(() => {
     const points = [
-      new THREE.Vector3(-0.08, 0.45, 0.45),
-      new THREE.Vector3(-0.15, 0.2, 0.5),
-      new THREE.Vector3(-0.18, 0, 0.52),
-      new THREE.Vector3(-0.15, -0.3, 0.48),
-      new THREE.Vector3(-0.12, -0.6, 0.4),
-      new THREE.Vector3(-0.08, -0.85, 0.3),
+      new THREE.Vector3(-0.04, 0.3, 0.25),
+      new THREE.Vector3(-0.08, 0.12, 0.28),
+      new THREE.Vector3(-0.1, 0, 0.3),
+      new THREE.Vector3(-0.08, -0.2, 0.26),
+      new THREE.Vector3(-0.06, -0.4, 0.2),
+      new THREE.Vector3(-0.04, -0.55, 0.15),
     ]
-    const curve = new THREE.CatmullRomCurve3(points)
-    return new THREE.TubeGeometry(curve, 40, 0.018, 8, false)
+    return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 40, 0.005, 6, false)
   }, [])
 
   const lcxGeo = useMemo(() => {
     const points = [
-      new THREE.Vector3(-0.08, 0.45, 0.45),
-      new THREE.Vector3(-0.3, 0.3, 0.35),
-      new THREE.Vector3(-0.42, 0.15, 0.2),
-      new THREE.Vector3(-0.45, -0.05, 0.0),
-      new THREE.Vector3(-0.4, -0.2, -0.15),
+      new THREE.Vector3(-0.04, 0.3, 0.25),
+      new THREE.Vector3(-0.15, 0.2, 0.2),
+      new THREE.Vector3(-0.22, 0.1, 0.1),
+      new THREE.Vector3(-0.24, -0.02, 0),
+      new THREE.Vector3(-0.2, -0.1, -0.08),
     ]
-    const curve = new THREE.CatmullRomCurve3(points)
-    return new THREE.TubeGeometry(curve, 32, 0.015, 8, false)
+    return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 32, 0.004, 6, false)
   }, [])
 
   const rcaGeo = useMemo(() => {
     const points = [
-      new THREE.Vector3(0.2, 0.5, 0.3),
-      new THREE.Vector3(0.35, 0.35, 0.35),
-      new THREE.Vector3(0.42, 0.15, 0.28),
-      new THREE.Vector3(0.4, -0.1, 0.15),
-      new THREE.Vector3(0.3, -0.35, 0.0),
-      new THREE.Vector3(0.15, -0.55, -0.08),
+      new THREE.Vector3(0.1, 0.32, 0.15),
+      new THREE.Vector3(0.18, 0.22, 0.18),
+      new THREE.Vector3(0.22, 0.08, 0.15),
+      new THREE.Vector3(0.2, -0.05, 0.08),
+      new THREE.Vector3(0.15, -0.2, 0),
+      new THREE.Vector3(0.08, -0.3, -0.04),
     ]
-    const curve = new THREE.CatmullRomCurve3(points)
-    return new THREE.TubeGeometry(curve, 40, 0.016, 8, false)
+    return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 40, 0.0045, 6, false)
   }, [])
 
-  const material = useMemo(() => new THREE.MeshPhysicalMaterial({
-    color: '#DD4444',
-    roughness: 0.35,
-    metalness: 0.05,
-    clearcoat: 0.5,
-    clearcoatRoughness: 0.1,
-    emissive: '#441111',
-    emissiveIntensity: 0.3,
+  const material = useMemo(() => new THREE.MeshBasicMaterial({
+    color: '#FF3030',
+    transparent: true,
+    opacity: 0.9,
+    depthWrite: false,
   }), [])
 
   if (!visible) return null
 
   return (
-    <group renderOrder={2}>
+    <group renderOrder={3}>
       <mesh geometry={ladGeo} material={material} />
       <mesh geometry={lcxGeo} material={material} />
       <mesh geometry={rcaGeo} material={material} />
+
+      <Html position={[-0.08, -0.1, 0.3]} center distanceFactor={6} style={{ pointerEvents: 'none' }}>
+        <span className="coronary-label">LAD</span>
+      </Html>
+      <Html position={[-0.22, 0.05, 0.05]} center distanceFactor={6} style={{ pointerEvents: 'none' }}>
+        <span className="coronary-label">LCx</span>
+      </Html>
+      <Html position={[0.2, 0.1, 0.15]} center distanceFactor={6} style={{ pointerEvents: 'none' }}>
+        <span className="coronary-label">RCA</span>
+      </Html>
     </group>
   )
 }

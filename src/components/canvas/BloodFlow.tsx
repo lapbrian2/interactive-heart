@@ -17,9 +17,9 @@ export function BloodFlow() {
       t: Math.random(),
       speed: 0.2 + Math.random() * 0.5,
       offset: new THREE.Vector3(
-        (Math.random() - 0.5) * 0.04,
-        (Math.random() - 0.5) * 0.04,
-        (Math.random() - 0.5) * 0.04
+        (Math.random() - 0.5) * 0.02,
+        (Math.random() - 0.5) * 0.02,
+        (Math.random() - 0.5) * 0.02
       ),
       // Vary size slightly for depth
       scale: 0.8 + Math.random() * 0.5,
@@ -68,7 +68,7 @@ export function BloodFlow() {
       args={[undefined, undefined, PARTICLE_COUNT]}
       renderOrder={3}
     >
-      <sphereGeometry args={[0.012, 6, 6]} />
+      <sphereGeometry args={[0.006, 4, 4]} />
       <meshBasicMaterial
         color="#E03030"
         transparent

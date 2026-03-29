@@ -7,15 +7,15 @@ import { useSimStore } from '../../store/useSimStore'
 useGLTF.preload('/models/heart-detailed.glb')
 
 const LABELS = [
-  { name: 'Left Ventricle', position: [-0.3, -0.4, 0.5], id: 'left-ventricle' },
-  { name: 'Right Ventricle', position: [0.35, -0.3, 0.5], id: 'right-ventricle' },
-  { name: 'Left Atrium', position: [-0.35, 0.5, -0.15], id: 'left-atrium' },
-  { name: 'Right Atrium', position: [0.4, 0.45, 0.15], id: 'right-atrium' },
-  { name: 'Aorta', position: [0.08, 0.9, 0.08], id: 'aorta' },
-  { name: 'Pulmonary Artery', position: [-0.15, 0.75, 0.3], id: 'pulmonary-artery' },
-  { name: 'Superior Vena Cava', position: [0.45, 0.8, -0.1], id: 'superior-vena-cava' },
-  { name: 'Mitral Valve', position: [-0.1, 0.08, 0.25], id: 'mitral-valve' },
-  { name: 'Tricuspid Valve', position: [0.25, 0.08, 0.3], id: 'tricuspid-valve' },
+  { name: 'Left Ventricle', position: [-0.35, -0.5, 0.3], id: 'left-ventricle' },
+  { name: 'Right Ventricle', position: [0.3, -0.45, 0.3], id: 'right-ventricle' },
+  { name: 'Left Atrium', position: [-0.35, 0.35, -0.2], id: 'left-atrium' },
+  { name: 'Right Atrium', position: [0.35, 0.3, -0.15], id: 'right-atrium' },
+  { name: 'Aorta', position: [0.05, 0.85, -0.05], id: 'aorta' },
+  { name: 'Pulmonary A.', position: [-0.2, 0.7, 0.2], id: 'pulmonary-artery' },
+  { name: 'SVC', position: [0.4, 0.75, -0.15], id: 'superior-vena-cava' },
+  { name: 'Mitral V.', position: [-0.2, 0.0, 0.3], id: 'mitral-valve' },
+  { name: 'Tricuspid V.', position: [0.2, -0.05, 0.3], id: 'tricuspid-valve' },
 ]
 
 /**

@@ -18,6 +18,7 @@ export function HeartScene() {
       <Lighting />
       <CameraRig />
       <HeartModel />
+      {/* These render at world scale — positions must match the auto-scaled model */}
       <ConductionSystem />
       <BloodFlow />
       <CoronaryArteries />

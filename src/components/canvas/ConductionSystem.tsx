@@ -20,7 +20,8 @@ const ConductionMaterial = shaderMaterial(
 extend({ ConductionMaterial })
 
 /**
- * Conduction pathway scaled to match heart-detailed.glb model bounds (~2.8 units tall).
+ * Conduction pathway — THIN tubes inside the heart.
+ * Radius 0.006 = hair-thin at model scale.
  */
 export function ConductionSystem() {
   const materialRef1 = useRef<any>(null)
@@ -28,36 +29,36 @@ export function ConductionSystem() {
   const wavePosition = useConductionWave()
   const visible = useSimStore((s) => s.activeLayers.has('conduction'))
 
-  // Main pathway: SA node → AV node → right bundle → apex
+  // SA node → AV node → right bundle → apex → Purkinje
   const mainTube = useMemo(() => {
     const points = [
-      new THREE.Vector3(0.4, 0.85, 0.05),    // SA node — upper right atrium
-      new THREE.Vector3(0.3, 0.6, 0.08),
-      new THREE.Vector3(0.15, 0.35, 0.08),
-      new THREE.Vector3(0.08, 0.15, 0.05),   // AV node
-      new THREE.Vector3(0, -0.05, 0.05),     // Bundle of His
-      new THREE.Vector3(-0.03, -0.35, 0.08),
-      new THREE.Vector3(-0.05, -0.7, 0.12),  // near apex
-      new THREE.Vector3(0, -1.0, 0.08),      // apex
-      new THREE.Vector3(0.15, -0.7, 0.2),    // Purkinje — right wall
-      new THREE.Vector3(0.25, -0.3, 0.25),
+      new THREE.Vector3(0.25, 0.7, 0.02),
+      new THREE.Vector3(0.15, 0.45, 0.04),
+      new THREE.Vector3(0.08, 0.25, 0.04),
+      new THREE.Vector3(0.04, 0.1, 0.02),
+      new THREE.Vector3(0, -0.05, 0.02),
+      new THREE.Vector3(-0.02, -0.25, 0.04),
+      new THREE.Vector3(-0.03, -0.5, 0.06),
+      new THREE.Vector3(0, -0.75, 0.04),
+      new THREE.Vector3(0.08, -0.5, 0.1),
+      new THREE.Vector3(0.15, -0.2, 0.12),
     ]
     const curve = new THREE.CatmullRomCurve3(points)
-    return new THREE.TubeGeometry(curve, 80, 0.025, 8, false)
+    return new THREE.TubeGeometry(curve, 80, 0.006, 6, false)
   }, [])
 
   // Left bundle branch
   const leftBranch = useMemo(() => {
     const points = [
-      new THREE.Vector3(0, -0.05, 0.05),     // fork at Bundle of His
-      new THREE.Vector3(-0.1, -0.3, -0.05),
-      new THREE.Vector3(-0.2, -0.6, -0.05),
-      new THREE.Vector3(-0.15, -0.95, 0),     // near apex — left
-      new THREE.Vector3(-0.3, -0.65, 0.12),   // Purkinje — left wall
-      new THREE.Vector3(-0.35, -0.3, 0.18),
+      new THREE.Vector3(0, -0.05, 0.02),
+      new THREE.Vector3(-0.06, -0.2, -0.02),
+      new THREE.Vector3(-0.12, -0.45, -0.02),
+      new THREE.Vector3(-0.08, -0.7, 0),
+      new THREE.Vector3(-0.18, -0.5, 0.06),
+      new THREE.Vector3(-0.22, -0.2, 0.08),
     ]
     const curve = new THREE.CatmullRomCurve3(points)
-    return new THREE.TubeGeometry(curve, 60, 0.02, 8, false)
+    return new THREE.TubeGeometry(curve, 60, 0.005, 6, false)
   }, [])
 
   useFrame(({ clock }) => {
@@ -77,21 +78,11 @@ export function ConductionSystem() {
     <group renderOrder={2}>
       <mesh geometry={mainTube}>
         {/* @ts-expect-error custom shaderMaterial */}
-        <conductionMaterial
-          ref={materialRef1}
-          transparent
-          side={THREE.DoubleSide}
-          depthWrite={false}
-        />
+        <conductionMaterial ref={materialRef1} transparent side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
       <mesh geometry={leftBranch}>
         {/* @ts-expect-error custom shaderMaterial */}
-        <conductionMaterial
-          ref={materialRef2}
-          transparent
-          side={THREE.DoubleSide}
-          depthWrite={false}
-        />
+        <conductionMaterial ref={materialRef2} transparent side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
     </group>
   )
