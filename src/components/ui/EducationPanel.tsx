@@ -1,15 +1,45 @@
+import { useState, useEffect, useRef } from 'react'
 import { useSimStore } from '../../store/useSimStore'
 import { PHASE_EDUCATION } from '../../data/phase-education'
+import { type Phase } from '../../data/cardiac-timing'
 
+/**
+ * Education panel that updates once per heartbeat cycle, not per phase.
+ * Shows the current phase info but only transitions when the phase
+ * changes AND has been stable for at least 200ms — prevents flickering.
+ */
 export function EducationPanel() {
   const phase = useSimStore((s) => s.currentPhase)
   const bpm = useSimStore((s) => s.bpm)
-  const edu = PHASE_EDUCATION[phase]
+  const [displayPhase, setDisplayPhase] = useState<Phase>('P1')
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    // Debounce phase changes — only update display after phase is stable 200ms
+    if (timerRef.current) clearTimeout(timerRef.current)
+
+    timerRef.current = setTimeout(() => {
+      if (phase !== displayPhase) {
+        setIsTransitioning(true)
+        setTimeout(() => {
+          setDisplayPhase(phase)
+          setIsTransitioning(false)
+        }, 150) // fade out then swap
+      }
+    }, 200)
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [phase, displayPhase])
+
+  const edu = PHASE_EDUCATION[displayPhase]
 
   return (
-    <div className="education-panel">
+    <div className={`education-panel ${isTransitioning ? 'transitioning' : ''}`}>
       <div className="edu-phase-indicator">
-        <span className="edu-phase-number">{phase}</span>
+        <span className="edu-phase-number">{displayPhase}</span>
         <span className="edu-phase-title">{edu.title}</span>
       </div>
 
