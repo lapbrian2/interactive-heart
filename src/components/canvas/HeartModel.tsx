@@ -4,10 +4,11 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import { useSimStore } from '../../store/useSimStore'
 
-useGLTF.preload('/models/heart.glb')
+// Try the 3D volumetric model first
+useGLTF.preload('/models/heart2.glb')
 
 export function HeartModel() {
-  const { scene, animations } = useGLTF('/models/heart.glb')
+  const { scene, animations } = useGLTF('/models/heart2.glb')
   const groupRef = useRef<THREE.Group>(null)
   const mixerRef = useRef<THREE.AnimationMixer | null>(null)
   const phaseProgressRef = useRef(0)
@@ -26,7 +27,6 @@ export function HeartModel() {
     )
   }, [])
 
-  // Set up animation mixer
   useEffect(() => {
     if (animations.length > 0) {
       const mixer = new THREE.AnimationMixer(scene)
@@ -39,7 +39,6 @@ export function HeartModel() {
     }
   }, [scene, animations])
 
-  // Compute bounding box and auto-scale/center the model
   useEffect(() => {
     const box = new THREE.Box3().setFromObject(scene)
     const size = new THREE.Vector3()
@@ -47,12 +46,10 @@ export function HeartModel() {
     box.getSize(size)
     box.getCenter(center)
 
-    // Log for debugging
-    console.log('[HeartModel] Bounding box size:', size.x.toFixed(3), size.y.toFixed(3), size.z.toFixed(3))
-    console.log('[HeartModel] Bounding box center:', center.x.toFixed(3), center.y.toFixed(3), center.z.toFixed(3))
-    console.log('[HeartModel] Children:', scene.children.length)
+    console.log('[HeartModel] Size:', size.x.toFixed(3), size.y.toFixed(3), size.z.toFixed(3))
+    console.log('[HeartModel] Center:', center.x.toFixed(3), center.y.toFixed(3), center.z.toFixed(3))
 
-    // Auto-scale to fit ~2 units tall
+    // Auto-scale to fit ~2.5 units in the largest dimension
     const maxDim = Math.max(size.x, size.y, size.z)
     const targetSize = 2.5
     const scaleFactor = maxDim > 0 ? targetSize / maxDim : 1
@@ -65,24 +62,51 @@ export function HeartModel() {
       -center.z * scaleFactor
     )
 
-    console.log('[HeartModel] Applied scale:', scaleFactor.toFixed(3))
+    console.log('[HeartModel] Scale:', scaleFactor.toFixed(3))
 
-    // Enhance materials for visibility
+    // Apply Netter-style anatomical materials
     let meshCount = 0
     scene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         meshCount++
-        // Keep original material but ensure it's visible
-        const mat = child.material as THREE.MeshStandardMaterial
-        if (mat) {
-          mat.side = THREE.DoubleSide
-          mat.needsUpdate = true
+        const n = child.name.toLowerCase()
+
+        // Classify and color each structure
+        let color = '#8B2020' // default: muscle
+        let roughness = 0.45
+        let clearcoat = 0.3
+
+        if (n.includes('aort') || n.includes('artery')) {
+          color = '#CC3333'
+          roughness = 0.35
+          clearcoat = 0.4
+        } else if (n.includes('vein') || n.includes('vena')) {
+          color = '#4A5A8A'
+          roughness = 0.4
+          clearcoat = 0.35
+        } else if (n.includes('valve') || n.includes('leaflet')) {
+          color = '#E8D8B8'
+          roughness = 0.3
+          clearcoat = 0.5
         }
+
+        child.material = new THREE.MeshPhysicalMaterial({
+          color,
+          roughness,
+          metalness: 0.03,
+          clearcoat,
+          clearcoatRoughness: 0.15,
+          sheen: 0.25,
+          sheenColor: new THREE.Color('#FF8888'),
+          sheenRoughness: 0.4,
+          side: THREE.DoubleSide,
+        })
+
         child.castShadow = true
         child.receiveShadow = true
       }
     })
-    console.log('[HeartModel] Mesh count:', meshCount)
+    console.log('[HeartModel] Meshes:', meshCount)
   }, [scene])
 
   useFrame((_, delta) => {
