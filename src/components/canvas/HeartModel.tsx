@@ -7,15 +7,15 @@ import { useSimStore } from '../../store/useSimStore'
 useGLTF.preload('/models/heart-detailed.glb')
 
 const LABELS = [
-  { name: 'Left Ventricle', position: [-0.2, -0.25, 0.35], id: 'left-ventricle' },
-  { name: 'Right Ventricle', position: [0.25, -0.2, 0.35], id: 'right-ventricle' },
-  { name: 'Left Atrium', position: [-0.25, 0.35, -0.1], id: 'left-atrium' },
-  { name: 'Right Atrium', position: [0.3, 0.3, 0.1], id: 'right-atrium' },
-  { name: 'Aorta', position: [0.05, 0.6, 0.05], id: 'aorta' },
-  { name: 'Pulmonary Artery', position: [-0.12, 0.5, 0.2], id: 'pulmonary-artery' },
-  { name: 'Superior Vena Cava', position: [0.35, 0.55, -0.05], id: 'superior-vena-cava' },
-  { name: 'Mitral Valve', position: [-0.08, 0.05, 0.18], id: 'mitral-valve' },
-  { name: 'Tricuspid Valve', position: [0.18, 0.05, 0.22], id: 'tricuspid-valve' },
+  { name: 'Left Ventricle', position: [-0.3, -0.4, 0.5], id: 'left-ventricle' },
+  { name: 'Right Ventricle', position: [0.35, -0.3, 0.5], id: 'right-ventricle' },
+  { name: 'Left Atrium', position: [-0.35, 0.5, -0.15], id: 'left-atrium' },
+  { name: 'Right Atrium', position: [0.4, 0.45, 0.15], id: 'right-atrium' },
+  { name: 'Aorta', position: [0.08, 0.9, 0.08], id: 'aorta' },
+  { name: 'Pulmonary Artery', position: [-0.15, 0.75, 0.3], id: 'pulmonary-artery' },
+  { name: 'Superior Vena Cava', position: [0.45, 0.8, -0.1], id: 'superior-vena-cava' },
+  { name: 'Mitral Valve', position: [-0.1, 0.08, 0.25], id: 'mitral-valve' },
+  { name: 'Tricuspid Valve', position: [0.25, 0.08, 0.3], id: 'tricuspid-valve' },
 ]
 
 export function HeartModel() {
@@ -26,6 +26,7 @@ export function HeartModel() {
   const currentPhaseRef = useRef('P1')
   const selectStructure = useSimStore((s) => s.selectStructure)
   const muscleVisible = useSimStore((s) => s.activeLayers.has('muscle'))
+  const viewMode = useSimStore((s) => s.viewMode)
 
   useMemo(() => {
     useSimStore.subscribe(
@@ -72,31 +73,26 @@ export function HeartModel() {
 
     scene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
-        // Keep the original painted texture but enhance the material
         const originalMap = (child.material as THREE.MeshStandardMaterial)?.map
 
+        // Solid opaque material with wet-tissue look
+        // Conduction + blood flow render on TOP of the model, not through it
         child.material = new THREE.MeshPhysicalMaterial({
-          // Use the original baked texture — this has the anatomical detail
           map: originalMap,
-          roughness: 0.45,
-          metalness: 0.02,
-          clearcoat: 0.25,
-          clearcoatRoughness: 0.2,
-          // Semi-transparent so conduction + blood flow show through
-          transmission: 0.15,
-          thickness: 2.0,
-          opacity: 0.85,
-          transparent: true,
+          color: originalMap ? '#FFFFFF' : '#8B2020',
+          roughness: 0.4,
+          metalness: 0.03,
+          clearcoat: 0.35,
+          clearcoatRoughness: 0.15,
           side: THREE.DoubleSide,
-          depthWrite: false,
           // Wet tissue sheen
-          sheen: 0.15,
-          sheenColor: new THREE.Color('#FF8888'),
+          sheen: 0.2,
+          sheenColor: new THREE.Color('#FF6666'),
           sheenRoughness: 0.35,
         })
 
         child.castShadow = true
-        child.renderOrder = 1
+        child.receiveShadow = true
       }
     })
   }, [scene])
@@ -126,18 +122,21 @@ export function HeartModel() {
     selectStructure(e.object?.name || 'left-ventricle')
   }
 
+  // In quiz mode, hide labels
+  const showLabels = viewMode !== 'quiz'
+
   return (
     <group ref={groupRef}>
       <group visible={muscleVisible}>
         <primitive object={scene} onClick={handleClick} />
       </group>
 
-      {LABELS.map((label) => (
+      {showLabels && LABELS.map((label) => (
         <Html
           key={label.id}
           position={label.position as [number, number, number]}
           center
-          distanceFactor={5}
+          distanceFactor={6}
           style={{ pointerEvents: 'all' }}
         >
           <div

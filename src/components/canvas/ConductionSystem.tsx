@@ -20,11 +20,7 @@ const ConductionMaterial = shaderMaterial(
 extend({ ConductionMaterial })
 
 /**
- * Conduction pathway — positioned inside the heart model bounds.
- * Traces: SA node (upper-right atrium) → AV node (center) →
- * Bundle of His → Purkinje fibers (apex, then fans upward).
- *
- * Also renders a second branch for the left bundle.
+ * Conduction pathway scaled to match heart-detailed.glb model bounds (~2.8 units tall).
  */
 export function ConductionSystem() {
   const materialRef1 = useRef<any>(null)
@@ -35,33 +31,33 @@ export function ConductionSystem() {
   // Main pathway: SA node → AV node → right bundle → apex
   const mainTube = useMemo(() => {
     const points = [
-      new THREE.Vector3(0.3, 0.6, 0),       // SA node — upper right atrium
-      new THREE.Vector3(0.2, 0.4, 0.05),    // atrial pathway
-      new THREE.Vector3(0.1, 0.2, 0.05),    // approaching AV node
-      new THREE.Vector3(0.05, 0.1, 0),      // AV node — center
-      new THREE.Vector3(0, -0.05, 0),       // Bundle of His — septum
-      new THREE.Vector3(-0.02, -0.25, 0.05),// right bundle branch
-      new THREE.Vector3(-0.05, -0.5, 0.1),  // descending
-      new THREE.Vector3(0, -0.8, 0.05),     // apex
-      new THREE.Vector3(0.1, -0.5, 0.15),   // Purkinje — fans back up
-      new THREE.Vector3(0.2, -0.2, 0.2),    // right ventricular wall
+      new THREE.Vector3(0.4, 0.85, 0.05),    // SA node — upper right atrium
+      new THREE.Vector3(0.3, 0.6, 0.08),
+      new THREE.Vector3(0.15, 0.35, 0.08),
+      new THREE.Vector3(0.08, 0.15, 0.05),   // AV node
+      new THREE.Vector3(0, -0.05, 0.05),     // Bundle of His
+      new THREE.Vector3(-0.03, -0.35, 0.08),
+      new THREE.Vector3(-0.05, -0.7, 0.12),  // near apex
+      new THREE.Vector3(0, -1.0, 0.08),      // apex
+      new THREE.Vector3(0.15, -0.7, 0.2),    // Purkinje — right wall
+      new THREE.Vector3(0.25, -0.3, 0.25),
     ]
     const curve = new THREE.CatmullRomCurve3(points)
-    return new THREE.TubeGeometry(curve, 80, 0.02, 8, false)
+    return new THREE.TubeGeometry(curve, 80, 0.025, 8, false)
   }, [])
 
-  // Left bundle branch — forks at the septum
+  // Left bundle branch
   const leftBranch = useMemo(() => {
     const points = [
-      new THREE.Vector3(0, -0.05, 0),       // fork point at Bundle of His
-      new THREE.Vector3(-0.08, -0.2, -0.05),// left bundle
-      new THREE.Vector3(-0.15, -0.45, -0.05),
-      new THREE.Vector3(-0.1, -0.75, 0),    // near apex — left side
-      new THREE.Vector3(-0.2, -0.5, 0.1),   // Purkinje — left ventricular wall
-      new THREE.Vector3(-0.25, -0.2, 0.15), // fans upward
+      new THREE.Vector3(0, -0.05, 0.05),     // fork at Bundle of His
+      new THREE.Vector3(-0.1, -0.3, -0.05),
+      new THREE.Vector3(-0.2, -0.6, -0.05),
+      new THREE.Vector3(-0.15, -0.95, 0),     // near apex — left
+      new THREE.Vector3(-0.3, -0.65, 0.12),   // Purkinje — left wall
+      new THREE.Vector3(-0.35, -0.3, 0.18),
     ]
     const curve = new THREE.CatmullRomCurve3(points)
-    return new THREE.TubeGeometry(curve, 60, 0.016, 8, false)
+    return new THREE.TubeGeometry(curve, 60, 0.02, 8, false)
   }, [])
 
   useFrame(({ clock }) => {
