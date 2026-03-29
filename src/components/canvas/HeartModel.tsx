@@ -1,63 +1,10 @@
 import { useRef, useMemo, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { useGLTF, Center } from '@react-three/drei'
+import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import { useSimStore } from '../../store/useSimStore'
 
 useGLTF.preload('/models/heart.glb')
-
-/**
- * Netter/Gray's Anatomy color palette.
- * Per-structure materials that mimic wet anatomical specimens
- * under clinical studio lighting.
- */
-const ANATOMY_PALETTE = {
-  // Myocardium — deep brownish-red, like fresh cardiac muscle
-  muscle: { color: '#8B2020', roughness: 0.45, metalness: 0.02, clearcoat: 0.3, clearcoatRoughness: 0.2 },
-  // Arteries — bright oxygenated red
-  artery: { color: '#CC3333', roughness: 0.35, metalness: 0.03, clearcoat: 0.4, clearcoatRoughness: 0.15 },
-  // Veins — dusky blue-purple
-  vein: { color: '#4A5A8A', roughness: 0.4, metalness: 0.02, clearcoat: 0.35, clearcoatRoughness: 0.2 },
-  // Valve leaflets — pale fibrous ivory
-  valve: { color: '#E8D8B8', roughness: 0.3, metalness: 0.05, clearcoat: 0.5, clearcoatRoughness: 0.1 },
-  // Endocardium / inner lining — glossy deep red
-  endocardium: { color: '#6B1515', roughness: 0.3, metalness: 0.02, clearcoat: 0.5, clearcoatRoughness: 0.1 },
-  // Fat / connective tissue — pale yellow
-  fat: { color: '#E8D060', roughness: 0.5, metalness: 0.0, clearcoat: 0.2, clearcoatRoughness: 0.3 },
-  // Aorta — thick arterial wall, slightly paler
-  aorta: { color: '#D04848', roughness: 0.35, metalness: 0.03, clearcoat: 0.45, clearcoatRoughness: 0.12 },
-}
-
-function createAnatomyMaterial(preset: keyof typeof ANATOMY_PALETTE): THREE.MeshPhysicalMaterial {
-  const p = ANATOMY_PALETTE[preset]
-  return new THREE.MeshPhysicalMaterial({
-    color: p.color,
-    roughness: p.roughness,
-    metalness: p.metalness,
-    clearcoat: p.clearcoat,
-    clearcoatRoughness: p.clearcoatRoughness,
-    side: THREE.DoubleSide,
-    // Subsurface scattering approximation via sheen
-    sheen: 0.3,
-    sheenColor: new THREE.Color('#FF6666'),
-    sheenRoughness: 0.4,
-  })
-}
-
-/**
- * Classify a mesh name to an anatomy palette preset.
- * Falls back to 'muscle' for unrecognized names.
- */
-function classifyMesh(name: string): keyof typeof ANATOMY_PALETTE {
-  const n = name.toLowerCase()
-  if (n.includes('aort')) return 'aorta'
-  if (n.includes('artery') || n.includes('pulmonary_a') || n.includes('coronar')) return 'artery'
-  if (n.includes('vein') || n.includes('vena') || n.includes('pulmonary_v')) return 'vein'
-  if (n.includes('valve') || n.includes('leaflet') || n.includes('cusp')) return 'valve'
-  if (n.includes('endo') || n.includes('inner') || n.includes('chamber')) return 'endocardium'
-  if (n.includes('fat') || n.includes('adipose') || n.includes('connective')) return 'fat'
-  return 'muscle'
-}
 
 export function HeartModel() {
   const { scene, animations } = useGLTF('/models/heart.glb')
@@ -92,16 +39,50 @@ export function HeartModel() {
     }
   }, [scene, animations])
 
-  // Apply Netter-style anatomical materials per mesh
+  // Compute bounding box and auto-scale/center the model
   useEffect(() => {
+    const box = new THREE.Box3().setFromObject(scene)
+    const size = new THREE.Vector3()
+    const center = new THREE.Vector3()
+    box.getSize(size)
+    box.getCenter(center)
+
+    // Log for debugging
+    console.log('[HeartModel] Bounding box size:', size.x.toFixed(3), size.y.toFixed(3), size.z.toFixed(3))
+    console.log('[HeartModel] Bounding box center:', center.x.toFixed(3), center.y.toFixed(3), center.z.toFixed(3))
+    console.log('[HeartModel] Children:', scene.children.length)
+
+    // Auto-scale to fit ~2 units tall
+    const maxDim = Math.max(size.x, size.y, size.z)
+    const targetSize = 2.5
+    const scaleFactor = maxDim > 0 ? targetSize / maxDim : 1
+    scene.scale.setScalar(scaleFactor)
+
+    // Center the model
+    scene.position.set(
+      -center.x * scaleFactor,
+      -center.y * scaleFactor,
+      -center.z * scaleFactor
+    )
+
+    console.log('[HeartModel] Applied scale:', scaleFactor.toFixed(3))
+
+    // Enhance materials for visibility
+    let meshCount = 0
     scene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
-        const preset = classifyMesh(child.name)
-        child.material = createAnatomyMaterial(preset)
+        meshCount++
+        // Keep original material but ensure it's visible
+        const mat = child.material as THREE.MeshStandardMaterial
+        if (mat) {
+          mat.side = THREE.DoubleSide
+          mat.needsUpdate = true
+        }
         child.castShadow = true
         child.receiveShadow = true
       }
     })
+    console.log('[HeartModel] Mesh count:', meshCount)
   }, [scene])
 
   useFrame((_, delta) => {
@@ -131,15 +112,8 @@ export function HeartModel() {
   }
 
   return (
-    <group ref={groupRef}>
-      <Center>
-        <primitive
-          object={scene}
-          scale={8}
-          visible={muscleVisible}
-          onClick={handleClick}
-        />
-      </Center>
+    <group ref={groupRef} visible={muscleVisible}>
+      <primitive object={scene} onClick={handleClick} />
     </group>
   )
 }
