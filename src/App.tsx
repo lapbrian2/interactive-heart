@@ -3,8 +3,10 @@ import { Suspense } from 'react'
 import { HeartScene } from './components/canvas/HeartScene'
 import { PostProcessing } from './components/canvas/PostProcessing'
 import { HUD } from './components/ui/HUD'
+import { LoadingScreen } from './components/ui/LoadingScreen'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { IntroOverlay } from './components/ui/IntroOverlay'
+import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts'
 import './App.css'
 
 export default function App() {
@@ -29,8 +31,17 @@ export default function App() {
           </Suspense>
         </Canvas>
       </ErrorBoundary>
+      <LoadingScreen />
       <HUD />
       <IntroOverlay />
+      <KeyboardShortcuts />
+      <footer className="site-footer">
+        <span>Built by Brian Lapinski</span>
+        <span className="footer-sep">|</span>
+        <span>Heart model CC-BY Mesh-Magnet via Sketchfab</span>
+        <span className="footer-sep">|</span>
+        <span>React Three Fiber + Three.js</span>
+      </footer>
     </div>
   )
 }
