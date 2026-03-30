@@ -52,6 +52,35 @@
   margin-top: 4px;
 }
 
+/* ─── Top Right Controls ─── */
+.top-right-controls {
+  position: absolute;
+  top: 28px;
+  right: 28px;
+  z-index: 15;
+  display: flex;
+  gap: 8px;
+}
+
+.sound-toggle {
+  all: unset;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 10px;
+  border: 1px solid var(--panel-border);
+  transition: all 0.2s;
+}
+
+.sound-toggle:hover {
+  color: var(--text-secondary);
+  border-color: rgba(180, 175, 165, 0.2);
+}
+
 /* ─── HUD Layout ─── */
 .hud {
   position: absolute;
@@ -1225,43 +1254,118 @@
 }
 
 /* ─── Responsive ─── */
+@media (max-width: 1024px) {
+  .education-panel {
+    max-height: 300px;
+  }
+
+  .bottom-panels {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .wiggers-canvas, .pv-canvas {
+    max-width: 100%;
+  }
+}
+
 @media (max-width: 768px) {
   .hud {
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr auto;
-    padding: 16px;
+    padding: 12px;
   }
 
   .hud-left {
     grid-column: 1;
     grid-row: 1;
-    flex-direction: row;
-    align-self: start;
-    padding-bottom: 0;
-    gap: 4px;
+    max-width: 100%;
+    margin-top: 36px;
+  }
+
+  .education-panel {
+    max-height: 180px;
+    font-size: 0.9em;
   }
 
   .hud-right {
     grid-column: 1;
     grid-row: 2;
-    flex-direction: row;
     align-self: end;
-    gap: 8px;
   }
 
   .telemetry-panel {
     min-width: auto;
-    padding: 10px 12px;
+    padding: 8px 10px;
+  }
+
+  .telemetry-section {
+    padding: 2px 0;
   }
 
   .title-block {
-    top: 16px;
-    left: 16px;
+    top: 12px;
+    left: 12px;
+  }
+
+  .title-block h1 {
+    font-size: 11px;
+  }
+
+  .top-right-controls {
+    top: 12px;
+    right: 12px;
+  }
+
+  .overlay-grid {
+    grid-template-columns: 1fr 1fr;
   }
 
   .annotation-card {
-    padding: 24px;
-    max-width: 92%;
+    padding: 20px;
+    max-width: 95%;
+  }
+
+  .annotation-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .site-footer {
+    display: none;
+  }
+
+  .bottom-panels {
+    gap: 6px;
+  }
+
+  .ecg-canvas {
+    height: 50px;
+  }
+
+  .wiggers-canvas {
+    height: 140px;
+  }
+
+  .pv-canvas {
+    height: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hud-left {
+    display: none;
+  }
+
+  .hud-right {
+    max-width: 100%;
+  }
+
+  .view-controls {
+    padding: 10px;
+  }
+
+  .bottom-panels {
+    flex-direction: column;
   }
 }
 

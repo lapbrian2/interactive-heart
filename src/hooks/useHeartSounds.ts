@@ -13,10 +13,16 @@ import { useSimStore } from '../store/useSimStore'
 
 let audioCtx: AudioContext | null = null
 
+// Register globally so SoundToggle can suspend/resume
+if (typeof window !== 'undefined') {
+  (window as any).__audioContexts = (window as any).__audioContexts || []
+}
+
 function getAudioContext(): AudioContext | null {
   if (audioCtx) return audioCtx
   try {
-    audioCtx = new AudioContext()
+    audioCtx = new AudioContext();
+    (window as any).__audioContexts.push(audioCtx)
     return audioCtx
   } catch {
     return null

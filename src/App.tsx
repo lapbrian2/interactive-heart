@@ -7,6 +7,8 @@ import { LoadingScreen } from './components/ui/LoadingScreen'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { IntroOverlay } from './components/ui/IntroOverlay'
 import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts'
+import { SoundToggle } from './components/ui/SoundToggle'
+import { DynamicTitle } from './components/ui/DynamicTitle'
 import './App.css'
 
 export default function App() {
@@ -15,6 +17,9 @@ export default function App() {
       <div className="title-block">
         <h1>Human Heart</h1>
         <div className="subtitle">Interactive Cardiac Anatomy</div>
+      </div>
+      <div className="top-right-controls">
+        <SoundToggle />
       </div>
       <ErrorBoundary>
         <Canvas
@@ -35,12 +40,15 @@ export default function App() {
       <HUD />
       <IntroOverlay />
       <KeyboardShortcuts />
+      <DynamicTitle />
       <footer className="site-footer">
         <span>Built by Brian Lapinski</span>
         <span className="footer-sep">|</span>
         <span>Heart model CC-BY Mesh-Magnet via Sketchfab</span>
         <span className="footer-sep">|</span>
         <span>React Three Fiber + Three.js</span>
+        <span className="footer-sep">|</span>
+        <span>Space: pause | 1-7: phases | R: reset</span>
       </footer>
     </div>
   )
