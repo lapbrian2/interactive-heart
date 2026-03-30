@@ -980,40 +980,30 @@
   letter-spacing: 0.05em;
 }
 
-/* ─── 3D Anatomy Labels ─── */
-.anatomy-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+/* ─── 3D Anatomy Pin Labels (textbook style) ─── */
+.anatomy-pin-label {
   cursor: pointer;
   white-space: nowrap;
   transition: opacity 0.2s;
+  border-bottom: 1px solid rgba(220, 215, 205, 0.15);
+  padding-bottom: 1px;
 }
 
-.anatomy-label:hover {
-  opacity: 1 !important;
+.anatomy-pin-label:hover {
+  border-bottom-color: rgba(220, 215, 205, 0.5);
 }
 
-.anatomy-label:hover .label-text {
+.anatomy-pin-label:hover .pin-label-text {
   color: var(--text-primary);
 }
 
-.label-dot {
-  width: 5px;
-  height: 5px;
-  background: rgba(220, 215, 205, 0.5);
-  border: 1px solid rgba(220, 215, 205, 0.3);
-  flex-shrink: 0;
-}
-
-.label-text {
-  font-family: var(--font-mono);
-  font-size: 9px;
+.pin-label-text {
+  font-family: var(--font-sans);
+  font-size: 10px;
   font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(220, 215, 205, 0.45);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.02em;
+  color: rgba(220, 215, 205, 0.55);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
   transition: color 0.2s;
 }
 

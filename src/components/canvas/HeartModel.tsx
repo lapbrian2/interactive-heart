@@ -7,16 +7,38 @@ import { CROSS_SECTION_PLANE } from '../../data/clipping'
 
 useGLTF.preload('/models/heart-detailed.glb')
 
+const leaderLineMaterial = new THREE.MeshBasicMaterial({
+  color: '#888888',
+  transparent: true,
+  opacity: 0.3,
+})
+
+function LeaderLine({ from, to }: { from: [number, number, number]; to: [number, number, number] }) {
+  const geo = useMemo(() => {
+    const curve = new THREE.LineCurve3(
+      new THREE.Vector3(...from),
+      new THREE.Vector3(...to)
+    )
+    return new THREE.TubeGeometry(curve, 1, 0.002, 4, false)
+  }, [from, to])
+
+  return <mesh geometry={geo} material={leaderLineMaterial} />
+}
+
+/**
+ * Anatomy labels with pin point (on structure) and label point (outside).
+ * Leader line connects pin to label — medical textbook style.
+ */
 const LABELS = [
-  { name: 'Left Ventricle', position: [-0.35, -0.5, 0.3], id: 'left-ventricle' },
-  { name: 'Right Ventricle', position: [0.3, -0.45, 0.3], id: 'right-ventricle' },
-  { name: 'Left Atrium', position: [-0.35, 0.35, -0.2], id: 'left-atrium' },
-  { name: 'Right Atrium', position: [0.35, 0.3, -0.15], id: 'right-atrium' },
-  { name: 'Aorta', position: [0.05, 0.85, -0.05], id: 'aorta' },
-  { name: 'Pulmonary A.', position: [-0.2, 0.7, 0.2], id: 'pulmonary-artery' },
-  { name: 'SVC', position: [0.4, 0.75, -0.15], id: 'superior-vena-cava' },
-  { name: 'Mitral V.', position: [-0.2, 0.0, 0.3], id: 'mitral-valve' },
-  { name: 'Tricuspid V.', position: [0.2, -0.05, 0.3], id: 'tricuspid-valve' },
+  { name: 'Left Ventricle', pin: [-0.1, -0.35, 0.2], label: [-0.65, -0.6, 0.4], id: 'left-ventricle' },
+  { name: 'Right Ventricle', pin: [0.15, -0.3, 0.2], label: [0.6, -0.55, 0.4], id: 'right-ventricle' },
+  { name: 'Left Atrium', pin: [-0.15, 0.3, 0], label: [-0.65, 0.4, 0.3], id: 'left-atrium' },
+  { name: 'Right Atrium', pin: [0.2, 0.25, 0], label: [0.6, 0.35, 0.3], id: 'right-atrium' },
+  { name: 'Aorta', pin: [0.03, 0.65, 0.05], label: [0.5, 0.9, 0.2], id: 'aorta' },
+  { name: 'Pulmonary Artery', pin: [-0.08, 0.55, 0.15], label: [-0.6, 0.75, 0.3], id: 'pulmonary-artery' },
+  { name: 'Superior Vena Cava', pin: [0.25, 0.6, -0.05], label: [0.65, 0.7, 0.2], id: 'superior-vena-cava' },
+  { name: 'Mitral Valve', pin: [-0.05, 0.02, 0.15], label: [-0.6, -0.1, 0.4], id: 'mitral-valve' },
+  { name: 'Tricuspid Valve', pin: [0.12, -0.02, 0.15], label: [0.55, -0.15, 0.4], id: 'tricuspid-valve' },
 ]
 
 /**
@@ -251,21 +273,31 @@ export function HeartModel() {
       </group>
 
       {showLabels && LABELS.map((label) => (
-        <Html
-          key={label.id}
-          position={label.position as [number, number, number]}
-          center
-          distanceFactor={6}
-          style={{ pointerEvents: 'all' }}
-        >
-          <div
-            className="anatomy-label"
-            onClick={() => selectStructure(label.id)}
+        <group key={label.id}>
+          {/* Pin dot on the structure */}
+          <mesh position={label.pin as [number, number, number]}>
+            <sphereGeometry args={[0.012, 8, 8]} />
+            <meshBasicMaterial color="#FFFFFF" transparent opacity={0.7} />
+          </mesh>
+
+          {/* Leader line from pin to label — thin tube */}
+          <LeaderLine from={label.pin as [number, number, number]} to={label.label as [number, number, number]} />
+
+          {/* Label text — positioned outside the heart */}
+          <Html
+            position={label.label as [number, number, number]}
+            center
+            distanceFactor={7}
+            style={{ pointerEvents: 'all' }}
           >
-            <span className="label-dot" />
-            <span className="label-text">{label.name}</span>
-          </div>
-        </Html>
+            <div
+              className="anatomy-pin-label"
+              onClick={() => selectStructure(label.id)}
+            >
+              <span className="pin-label-text">{label.name}</span>
+            </div>
+          </Html>
+        </group>
       ))}
     </group>
   )
