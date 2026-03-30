@@ -1042,6 +1042,136 @@
   pointer-events: none;
 }
 
+/* ─── Guided Tour ─── */
+.tour-start-btn {
+  all: unset;
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent-warm);
+  background: rgba(204, 102, 68, 0.08);
+  border: 1px solid rgba(204, 102, 68, 0.25);
+  padding: 8px 24px;
+  cursor: pointer;
+  pointer-events: all;
+  transition: all 0.2s;
+}
+
+.tour-start-btn:hover {
+  background: rgba(204, 102, 68, 0.15);
+  border-color: rgba(204, 102, 68, 0.4);
+}
+
+.tour-overlay {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 150;
+  pointer-events: all;
+  max-width: 420px;
+  width: 90%;
+}
+
+.tour-card {
+  background: rgba(12, 14, 22, 0.96);
+  border: 1px solid rgba(204, 102, 68, 0.2);
+  padding: 20px 24px;
+  backdrop-filter: blur(12px);
+}
+
+.tour-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.tour-step-num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--accent-warm);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.tour-progress-bar {
+  flex: 1;
+  height: 2px;
+  background: rgba(180, 175, 165, 0.1);
+}
+
+.tour-progress-fill {
+  height: 100%;
+  background: var(--accent-warm);
+  transition: width 0.3s ease;
+}
+
+.tour-title {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+}
+
+.tour-text {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  margin: 0 0 18px;
+}
+
+.tour-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tour-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.tour-btn {
+  all: unset;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tour-btn-primary {
+  background: rgba(204, 102, 68, 0.12);
+  border: 1px solid rgba(204, 102, 68, 0.3);
+  color: var(--accent-warm);
+}
+
+.tour-btn-primary:hover {
+  background: rgba(204, 102, 68, 0.2);
+}
+
+.tour-btn-secondary {
+  color: var(--text-muted);
+  border: 1px solid var(--panel-border);
+}
+
+.tour-btn-secondary:hover {
+  color: var(--text-secondary);
+  border-color: rgba(180, 175, 165, 0.2);
+}
+
 /* ─── Intro Overlay ─── */
 .intro-overlay {
   position: fixed;

@@ -2,80 +2,96 @@ import { useRef, useMemo, useEffect } from 'react'
 import { useSimStore } from '../store/useSimStore'
 
 /**
- * Synthesizes S1 ("lub") and S2 ("dub") heart sounds using Web Audio API.
- * S1 plays at P2 onset (AV valve closure).
- * S2 plays at P5 onset (semilunar valve closure).
+ * Enhanced heart sound synthesis — S1, S2 with realistic frequency content.
  *
- * Uses oscillators + filters to approximate real heart sound frequencies:
- * S1: ~25-45 Hz, longer duration, lower pitch
- * S2: ~50-70 Hz, shorter duration, higher pitch
+ * S1 ("lub"): Two components — mitral (M1) + tricuspid (T1) closure
+ *   Low frequency 25-45Hz + mid 50-100Hz, duration 150ms
+ *   M1 precedes T1 by 20ms
+ *
+ * S2 ("dub"): Two components — aortic (A2) + pulmonary (P2) closure
+ *   Higher frequency 50-80Hz, shorter duration 100ms
+ *   A2 precedes P2 by 30ms (physiological splitting)
  */
 
 let audioCtx: AudioContext | null = null
 
-// Register globally so SoundToggle can suspend/resume
 if (typeof window !== 'undefined') {
   (window as any).__audioContexts = (window as any).__audioContexts || []
 }
 
-function getAudioContext(): AudioContext | null {
+function getCtx(): AudioContext | null {
   if (audioCtx) return audioCtx
   try {
     audioCtx = new AudioContext();
     (window as any).__audioContexts.push(audioCtx)
     return audioCtx
-  } catch {
-    return null
-  }
+  } catch { return null }
 }
 
-function playHeartSound(type: 'S1' | 'S2') {
-  const ctx = getAudioContext()
-  if (!ctx) return
-  if (ctx.state === 'suspended') ctx.resume()
+function playComponent(
+  ctx: AudioContext,
+  freq: number,
+  duration: number,
+  gain: number,
+  delay: number,
+  freqEnd?: number
+) {
+  const now = ctx.currentTime + delay
 
-  const now = ctx.currentTime
-
-  // Oscillator for the thump
   const osc = ctx.createOscillator()
-  const gain = ctx.createGain()
+  const g = ctx.createGain()
   const filter = ctx.createBiquadFilter()
 
-  filter.type = 'lowpass'
-
-  if (type === 'S1') {
-    // S1 "lub" — lower pitch, longer, louder
-    osc.frequency.setValueAtTime(35, now)
-    osc.frequency.exponentialRampToValueAtTime(20, now + 0.12)
-    filter.frequency.setValueAtTime(80, now)
-    gain.gain.setValueAtTime(0.3, now)
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15)
-  } else {
-    // S2 "dub" — higher pitch, shorter, quieter
-    osc.frequency.setValueAtTime(55, now)
-    osc.frequency.exponentialRampToValueAtTime(30, now + 0.08)
-    filter.frequency.setValueAtTime(120, now)
-    gain.gain.setValueAtTime(0.2, now)
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1)
-  }
-
   osc.type = 'sine'
+  osc.frequency.setValueAtTime(freq, now)
+  if (freqEnd) osc.frequency.exponentialRampToValueAtTime(freqEnd, now + duration)
+
+  filter.type = 'lowpass'
+  filter.frequency.setValueAtTime(freq * 3, now)
+
+  g.gain.setValueAtTime(gain, now)
+  g.gain.exponentialRampToValueAtTime(0.001, now + duration)
+
   osc.connect(filter)
-  filter.connect(gain)
-  gain.connect(ctx.destination)
+  filter.connect(g)
+  g.connect(ctx.destination)
 
   osc.start(now)
-  osc.stop(now + 0.2)
+  osc.stop(now + duration + 0.01)
+}
+
+function playS1() {
+  const ctx = getCtx()
+  if (!ctx || ctx.state === 'suspended') return
+
+  // M1 — mitral component (first, louder)
+  playComponent(ctx, 40, 0.14, 0.25, 0, 22)
+  playComponent(ctx, 80, 0.1, 0.12, 0, 45)
+
+  // T1 — tricuspid component (20ms later, quieter)
+  playComponent(ctx, 35, 0.12, 0.15, 0.02, 20)
+  playComponent(ctx, 70, 0.08, 0.08, 0.02, 40)
+}
+
+function playS2() {
+  const ctx = getCtx()
+  if (!ctx || ctx.state === 'suspended') return
+
+  // A2 — aortic component (first)
+  playComponent(ctx, 60, 0.09, 0.18, 0, 35)
+  playComponent(ctx, 110, 0.06, 0.08, 0, 55)
+
+  // P2 — pulmonary component (30ms later — physiological splitting)
+  playComponent(ctx, 55, 0.08, 0.12, 0.03, 32)
+  playComponent(ctx, 95, 0.05, 0.06, 0.03, 48)
 }
 
 export function useHeartSounds() {
   const lastPhaseRef = useRef('P7')
-  const enabledRef = useRef(true)
 
-  // Initialize audio context on first user interaction
   useEffect(() => {
     const initAudio = () => {
-      getAudioContext()
+      getCtx()
       window.removeEventListener('click', initAudio)
       window.removeEventListener('keydown', initAudio)
     }
@@ -91,23 +107,12 @@ export function useHeartSounds() {
     return useSimStore.subscribe(
       (s) => s.currentPhase,
       (phase) => {
-        if (!enabledRef.current) return
         const prev = lastPhaseRef.current
         lastPhaseRef.current = phase
 
-        // S1 at P2 onset (AV valves close)
-        if (phase === 'P2' && prev !== 'P2') {
-          playHeartSound('S1')
-        }
-        // S2 at P5 onset (semilunar valves close)
-        if (phase === 'P5' && prev !== 'P5') {
-          playHeartSound('S2')
-        }
+        if (phase === 'P2' && prev !== 'P2') playS1()
+        if (phase === 'P5' && prev !== 'P5') playS2()
       }
     )
   }, [])
-
-  return {
-    setEnabled: (enabled: boolean) => { enabledRef.current = enabled },
-  }
 }

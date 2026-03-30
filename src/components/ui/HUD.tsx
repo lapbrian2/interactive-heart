@@ -5,6 +5,7 @@ import { ViewControls } from './ViewControls'
 import { WiggersDiagram } from './WiggersDiagram'
 import { PVLoop } from './PVLoop'
 import { AnnotationCard } from './AnnotationCard'
+import { GuidedTour } from './GuidedTour'
 import { useSimStore } from '../../store/useSimStore'
 
 export function HUD() {
@@ -33,6 +34,7 @@ export function HUD() {
         </div>
       </div>
       <AnnotationCard />
+      <GuidedTour />
     </div>
   )
 }
