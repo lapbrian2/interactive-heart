@@ -196,7 +196,10 @@ export function HeartModel() {
     selectStructure(id)
   }
 
-  const showLabels = viewMode !== 'quiz'
+  const interiorOn = useSimStore((s) => s.activeLayers.has('interior'))
+  const crossSectOn = useSimStore((s) => s.activeLayers.has('crossSection'))
+  // Hide anatomy pin labels when interior view shows its own labels
+  const showLabels = viewMode !== 'quiz' && !interiorOn && !crossSectOn
 
   return (
     <group ref={groupRef}>

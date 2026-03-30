@@ -4,285 +4,165 @@ import { useSimStore } from '../../store/useSimStore'
 import { Html } from '@react-three/drei'
 
 /**
- * Anatomically accurate interior structures based on detailed
- * spatial research. All positions normalized to 2.8-unit heart centered at origin.
- *
- * Visible when Interior or Cross Section overlays are active.
+ * Anatomically accurate interior structures.
+ * Scaled to fit INSIDE the heart model (0.6x scale factor).
+ * Labels are minimal — only key structures labeled.
  */
 
-// ── Materials (Netter color palette) ──
+const S = 0.55 // Scale factor to keep everything inside the heart shell
 
-const myocardiumMat = new THREE.MeshPhysicalMaterial({
-  color: '#8B2020', roughness: 0.35, metalness: 0.02, clearcoat: 0.4,
-  clearcoatRoughness: 0.15, side: THREE.DoubleSide,
+// ── Materials ──
+const myoMat = new THREE.MeshPhysicalMaterial({
+  color: '#8B2020', roughness: 0.35, metalness: 0.02, clearcoat: 0.35, side: THREE.DoubleSide,
 })
-
 const septumMat = new THREE.MeshPhysicalMaterial({
-  color: '#7A2828', roughness: 0.35, metalness: 0.02, clearcoat: 0.35,
-  clearcoatRoughness: 0.15, side: THREE.DoubleSide,
+  color: '#7A2828', roughness: 0.35, metalness: 0.02, clearcoat: 0.3, side: THREE.DoubleSide,
+})
+const papMat = new THREE.MeshPhysicalMaterial({
+  color: '#A0352C', roughness: 0.4, metalness: 0.01, clearcoat: 0.25, side: THREE.DoubleSide,
+})
+const chordMat = new THREE.MeshBasicMaterial({ color: '#F5F0E8', transparent: true, opacity: 0.6 })
+const leafMat = new THREE.MeshPhysicalMaterial({
+  color: '#F0D8D0', roughness: 0.25, metalness: 0.03, clearcoat: 0.5,
+  side: THREE.DoubleSide, transparent: true, opacity: 0.75,
+})
+const membrMat = new THREE.MeshBasicMaterial({
+  color: '#F0D8D0', transparent: true, opacity: 0.35, side: THREE.DoubleSide,
 })
 
-const membranousMat = new THREE.MeshPhysicalMaterial({
-  color: '#F0D8D0', roughness: 0.3, metalness: 0.01, clearcoat: 0.5,
-  clearcoatRoughness: 0.1, side: THREE.DoubleSide, transparent: true, opacity: 0.6,
-})
-
-const papillaryMat = new THREE.MeshPhysicalMaterial({
-  color: '#A0352C', roughness: 0.4, metalness: 0.01, clearcoat: 0.3,
-  clearcoatRoughness: 0.2, side: THREE.DoubleSide,
-})
-
-const chordaeMat = new THREE.MeshBasicMaterial({
-  color: '#F5F0E8', transparent: true, opacity: 0.75,
-})
-
-const leafletMat = new THREE.MeshPhysicalMaterial({
-  color: '#F0D8D0', roughness: 0.25, metalness: 0.03, clearcoat: 0.6,
-  clearcoatRoughness: 0.08, side: THREE.DoubleSide, transparent: true, opacity: 0.8,
-})
-
-const smoothEndoMat = new THREE.MeshPhysicalMaterial({
-  color: '#E8D0C8', roughness: 0.3, metalness: 0.01, clearcoat: 0.5,
-  clearcoatRoughness: 0.1, side: THREE.DoubleSide, transparent: true, opacity: 0.4,
-})
-
-const fibrousMat = new THREE.MeshPhysicalMaterial({
-  color: '#F5F0E8', roughness: 0.3, metalness: 0.02, clearcoat: 0.4,
-  clearcoatRoughness: 0.15, side: THREE.DoubleSide,
-})
-
-const fossaMat = new THREE.MeshBasicMaterial({
-  color: '#F0D8D0', transparent: true, opacity: 0.3, side: THREE.DoubleSide,
-})
-
-// ── Chordae generator ──
-
-function makeChorda(from: [number, number, number], to: [number, number, number], radius = 0.003) {
-  const curve = new THREE.LineCurve3(new THREE.Vector3(...from), new THREE.Vector3(...to))
-  return new THREE.TubeGeometry(curve, 4, radius, 4, false)
+function tube(pts: number[][], radius: number) {
+  const v = pts.map(([x, y, z]) => new THREE.Vector3(x * S, y * S, z * S))
+  return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(v), 12, radius * S, 6, false)
 }
 
-// ── Labels ──
+function chorda(from: number[], to: number[]) {
+  return tube([from, to], 0.003)
+}
 
-const INTERIOR_LABELS = [
-  { name: 'Interventricular Septum', pos: [0.1, -0.3, 0.12] },
-  { name: 'Membranous Septum', pos: [0.05, 0.5, 0.0] },
-  { name: 'Anterolateral Papillary', pos: [0.5, -0.5, 0.25] },
-  { name: 'Posteromedial Papillary', pos: [0.2, -0.5, -0.35] },
-  { name: 'Moderator Band', pos: [-0.15, -0.55, 0.25] },
-  { name: 'Fossa Ovalis', pos: [0.05, 1.0, -0.15] },
-  { name: 'Crista Supraventricularis', pos: [-0.15, 0.3, 0.3] },
-  { name: 'LV Outflow Tract', pos: [0.2, 0.35, 0.25] },
-  { name: 'Infundibulum', pos: [-0.05, 0.55, 0.45] },
-  { name: 'Mitral Anterior Leaflet', pos: [0.35, 0.45, 0.0] },
-  { name: 'Tricuspid Valve', pos: [-0.2, 0.45, 0.15] },
-  { name: 'RV Anterior Papillary', pos: [-0.3, -0.4, 0.4] },
+// Only the most important labels — 6 max visible at once
+const LABELS = [
+  { name: 'Septum', pos: [0.06 * S, -0.2 * S, 0.08 * S] },
+  { name: 'Moderator Band', pos: [-0.12 * S, -0.55 * S, 0.2 * S] },
+  { name: 'Papillary Muscles', pos: [0.3 * S, -0.5 * S, 0.15 * S] },
+  { name: 'Chordae Tendineae', pos: [0.25 * S, -0.1 * S, 0.05 * S] },
+  { name: 'Fossa Ovalis', pos: [0.03 * S, 0.9 * S, -0.08 * S] },
+  { name: 'Mitral Leaflets', pos: [0.2 * S, 0.45 * S, -0.02 * S] },
 ]
 
 export function HeartInterior() {
-  const crossSectionActive = useSimStore((s) => s.activeLayers.has('crossSection'))
-  const interiorActive = useSimStore((s) => s.activeLayers.has('interior'))
+  const crossSection = useSimStore((s) => s.activeLayers.has('crossSection'))
+  const interior = useSimStore((s) => s.activeLayers.has('interior'))
 
-  // ── Interventricular Septum (muscular portion) ──
+  // Septum (muscular)
   const septumGeo = useMemo(() => {
     const shape = new THREE.Shape()
-    shape.moveTo(0, 0.2)
-    shape.bezierCurveTo(0.03, -0.1, -0.02, -0.5, 0, -1.0)
-    shape.lineTo(0.12, -1.0)
-    shape.bezierCurveTo(0.14, -0.5, 0.09, -0.1, 0.12, 0.2)
+    shape.moveTo(0, 0.15 * S)
+    shape.bezierCurveTo(0.02 * S, -0.1 * S, -0.01 * S, -0.5 * S, 0, -0.85 * S)
+    shape.lineTo(0.08 * S, -0.85 * S)
+    shape.bezierCurveTo(0.1 * S, -0.5 * S, 0.06 * S, -0.1 * S, 0.08 * S, 0.15 * S)
     shape.closePath()
-    return new THREE.ExtrudeGeometry(shape, { depth: 0.15, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 2 })
+    return new THREE.ExtrudeGeometry(shape, { depth: 0.1 * S, bevelEnabled: false })
   }, [])
 
-  // ── Membranous septum (thin, pale) ──
-  const membranousGeo = useMemo(() => new THREE.CircleGeometry(0.06, 16), [])
+  // Papillary muscles
+  const alvPap = useMemo(() => new THREE.ConeGeometry(0.06 * S, 0.3 * S, 8), [])
+  const pmPap = useMemo(() => new THREE.ConeGeometry(0.05 * S, 0.3 * S, 8), [])
+  const rvPap = useMemo(() => new THREE.ConeGeometry(0.05 * S, 0.22 * S, 8), [])
 
-  // ── LV Anterolateral papillary muscle ──
-  const alvPapGeo = useMemo(() => new THREE.ConeGeometry(0.085, 0.45, 10), [])
+  // Moderator band
+  const modGeo = useMemo(() => tube(
+    [[0, -0.6, 0.08], [-0.1, -0.55, 0.18], [-0.2, -0.48, 0.25]],
+    0.025
+  ), [])
 
-  // ── LV Posteromedial papillary muscle (2 heads) ──
-  const pmPapGeo = useMemo(() => new THREE.ConeGeometry(0.07, 0.45, 10), [])
-  const pmPapGeo2 = useMemo(() => new THREE.ConeGeometry(0.06, 0.4, 8), [])
+  // Crista
+  const cristaGeo = useMemo(() => tube(
+    [[0.0, 0.25, 0.12], [-0.08, 0.25, 0.2], [-0.18, 0.25, 0.25]],
+    0.03
+  ), [])
 
-  // ── RV Anterior papillary (largest) ──
-  const rvAntPapGeo = useMemo(() => new THREE.ConeGeometry(0.075, 0.35, 8), [])
+  // Mitral leaflets
+  const mitAntGeo = useMemo(() => new THREE.CircleGeometry(0.08 * S, 12, 0, Math.PI), [])
+  const mitPostGeo = useMemo(() => new THREE.CircleGeometry(0.06 * S, 12, 0, Math.PI), [])
 
-  // ── RV Posterior papillary ──
-  const rvPostPapGeo = useMemo(() => new THREE.ConeGeometry(0.05, 0.25, 8), [])
+  // Tricuspid leaflets
+  const triGeo = useMemo(() => new THREE.CircleGeometry(0.06 * S, 10, 0, Math.PI * 0.67), [])
 
-  // ── RV Septal papillary (tiny) ──
-  const rvSeptPapGeo = useMemo(() => new THREE.ConeGeometry(0.03, 0.15, 6), [])
+  // Fossa ovalis
+  const fossaGeo = useMemo(() => new THREE.CircleGeometry(0.04 * S, 16), [])
+  const limbusGeo = useMemo(() => new THREE.RingGeometry(0.04 * S, 0.06 * S, 16), [])
 
-  // ── Moderator band ──
-  const moderatorGeo = useMemo(() => {
-    const curve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(0, -0.6, 0.1),
-      new THREE.Vector3(-0.12, -0.55, 0.2),
-      new THREE.Vector3(-0.25, -0.5, 0.3),
-    ])
-    return new THREE.TubeGeometry(curve, 16, 0.035, 8, false)
-  }, [])
-
-  // ── Crista supraventricularis ──
-  const cristaGeo = useMemo(() => {
-    const curve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(0.0, 0.3, 0.15),
-      new THREE.Vector3(-0.1, 0.3, 0.25),
-      new THREE.Vector3(-0.25, 0.3, 0.3),
-    ])
-    return new THREE.TubeGeometry(curve, 12, 0.04, 8, false)
-  }, [])
-
-  // ── LVOT smooth wall ──
-  const lvotGeo = useMemo(() => new THREE.CylinderGeometry(0.14, 0.16, 0.5, 12, 1, true), [])
-
-  // ── Infundibulum smooth wall ──
-  const infundGeo = useMemo(() => new THREE.CylinderGeometry(0.12, 0.14, 0.45, 12, 1, true), [])
-
-  // ── Mitral valve leaflets ──
-  const mitralAnteriorGeo = useMemo(() => new THREE.CircleGeometry(0.12, 16, 0, Math.PI), [])
-  const mitralPosteriorGeo = useMemo(() => new THREE.CircleGeometry(0.1, 16, 0, Math.PI), [])
-
-  // ── Tricuspid valve (3 leaflets) ──
-  const tricuspidGeo = useMemo(() => new THREE.CircleGeometry(0.1, 12, 0, Math.PI * 0.67), [])
-
-  // ── Fossa ovalis ──
-  const fossaGeo = useMemo(() => {
-    const shape = new THREE.Shape()
-    shape.absellipse(0, 0, 0.075, 0.05, 0, Math.PI * 2, false, 0)
-    return new THREE.ShapeGeometry(shape)
-  }, [])
-
-  // ── Fossa limbus (rim) ──
-  const limbusGeo = useMemo(() => new THREE.RingGeometry(0.07, 0.1, 20), [])
-
-  // ── Chordae tendineae (LV) ──
+  // Chordae (fewer, cleaner)
   const chordaeGeos = useMemo(() => [
-    // Anterolateral papillary → mitral anterior leaflet (lateral half)
-    makeChorda([0.45, -0.3, 0.2], [0.3, 0.45, 0.02]),
-    makeChorda([0.45, -0.3, 0.2], [0.35, 0.42, 0.05]),
-    makeChorda([0.45, -0.3, 0.2], [0.4, 0.4, -0.02]),
-    // Anterolateral → mitral posterior leaflet (lateral half)
-    makeChorda([0.45, -0.3, 0.2], [0.4, 0.45, -0.08]),
-    makeChorda([0.45, -0.3, 0.2], [0.42, 0.43, -0.05]),
-    // Posteromedial papillary → mitral anterior (medial half)
-    makeChorda([0.15, -0.3, -0.3], [0.25, 0.45, -0.02]),
-    makeChorda([0.15, -0.3, -0.3], [0.2, 0.42, 0.0]),
-    // Posteromedial → mitral posterior (medial half)
-    makeChorda([0.15, -0.3, -0.3], [0.28, 0.45, -0.1]),
-    makeChorda([0.15, -0.3, -0.3], [0.3, 0.43, -0.12]),
-    // Second head of posteromedial
-    makeChorda([0.2, -0.35, -0.25], [0.22, 0.44, -0.04]),
-    makeChorda([0.2, -0.35, -0.25], [0.32, 0.44, -0.08]),
+    chorda([0.35, -0.25, 0.15], [0.2, 0.4, 0.0]),
+    chorda([0.35, -0.25, 0.15], [0.25, 0.38, 0.03]),
+    chorda([0.35, -0.25, 0.15], [0.28, 0.4, -0.05]),
+    chorda([0.12, -0.25, -0.22], [0.18, 0.4, -0.02]),
+    chorda([0.12, -0.25, -0.22], [0.22, 0.38, -0.06]),
+    chorda([0.12, -0.25, -0.22], [0.15, 0.4, 0.01]),
   ], [])
 
-  // ── Trabeculae bridges (LV — 3 crossing the apical cavity) ──
+  // Trabeculae bridges (LV)
   const trabGeos = useMemo(() => [
-    new THREE.TubeGeometry(new THREE.CatmullRomCurve3([
-      new THREE.Vector3(0.3, -0.9, 0.15),
-      new THREE.Vector3(0.15, -1.0, 0.1),
-      new THREE.Vector3(0.0, -0.9, 0.05),
-    ]), 8, 0.01, 4, false),
-    new THREE.TubeGeometry(new THREE.CatmullRomCurve3([
-      new THREE.Vector3(0.35, -0.7, 0.1),
-      new THREE.Vector3(0.2, -0.8, 0.0),
-      new THREE.Vector3(0.05, -0.7, -0.05),
-    ]), 8, 0.008, 4, false),
-    new THREE.TubeGeometry(new THREE.CatmullRomCurve3([
-      new THREE.Vector3(0.25, -0.6, 0.2),
-      new THREE.Vector3(0.15, -0.65, 0.15),
-      new THREE.Vector3(0.05, -0.55, 0.1),
-    ]), 8, 0.009, 4, false),
+    tube([[ 0.2, -0.7, 0.1], [0.1, -0.8, 0.05], [0.0, -0.7, 0.0]], 0.007),
+    tube([[ 0.25, -0.55, 0.08], [0.15, -0.6, 0.0], [0.03, -0.5, -0.03]], 0.006),
   ], [])
 
-  // ── RV Trabeculae (coarser, more prominent) ──
+  // RV trabeculae
   const rvTrabGeos = useMemo(() => [
-    new THREE.TubeGeometry(new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-0.35, -0.3, 0.3),
-      new THREE.Vector3(-0.2, -0.4, 0.35),
-      new THREE.Vector3(-0.1, -0.3, 0.25),
-    ]), 8, 0.012, 4, false),
-    new THREE.TubeGeometry(new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-0.3, -0.15, 0.35),
-      new THREE.Vector3(-0.2, -0.25, 0.3),
-      new THREE.Vector3(-0.05, -0.2, 0.2),
-    ]), 8, 0.014, 4, false),
-    new THREE.TubeGeometry(new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-0.35, -0.5, 0.25),
-      new THREE.Vector3(-0.25, -0.6, 0.3),
-      new THREE.Vector3(-0.1, -0.55, 0.2),
-    ]), 8, 0.011, 4, false),
+    tube([[-0.25, -0.25, 0.22], [-0.15, -0.3, 0.25], [-0.05, -0.22, 0.18]], 0.009),
+    tube([[-0.22, -0.4, 0.2], [-0.15, -0.45, 0.22], [-0.06, -0.38, 0.16]], 0.008),
   ], [])
 
-  if (!crossSectionActive && !interiorActive) return null
+  if (!crossSection && !interior) return null
 
   return (
     <group>
-      {/* ── Interventricular Septum ── */}
-      <mesh geometry={septumGeo} material={septumMat} position={[0.04, 0, -0.07]} />
+      {/* Septum */}
+      <mesh geometry={septumGeo} material={septumMat} position={[0.03 * S, 0, -0.05 * S]} />
 
-      {/* ── Membranous Septum (thin, pale) ── */}
-      <mesh geometry={membranousGeo} material={membranousMat} position={[0.05, 0.5, -0.05]} rotation={[0, Math.PI * 0.1, 0]} />
+      {/* Membranous septum */}
+      <mesh geometry={fossaGeo} material={membrMat} position={[0.04 * S, 0.42 * S, -0.03 * S]} />
 
-      {/* ── LV Papillary Muscles ── */}
-      <mesh geometry={alvPapGeo} material={papillaryMat} position={[0.45, -0.5, 0.2]} rotation={[0.15, 0, -0.25]} />
-      <mesh geometry={pmPapGeo} material={papillaryMat} position={[0.15, -0.5, -0.3]} rotation={[-0.1, 0, 0.15]} />
-      <mesh geometry={pmPapGeo2} material={papillaryMat} position={[0.2, -0.55, -0.25]} rotation={[-0.05, 0.2, 0.1]} />
+      {/* LV Papillary */}
+      <mesh geometry={alvPap} material={papMat} position={[0.35 * S, -0.4 * S, 0.15 * S]} rotation={[0.1, 0, -0.2]} />
+      <mesh geometry={pmPap} material={papMat} position={[0.12 * S, -0.4 * S, -0.22 * S]} rotation={[-0.08, 0, 0.12]} />
 
-      {/* ── RV Papillary Muscles ── */}
-      <mesh geometry={rvAntPapGeo} material={papillaryMat} position={[-0.3, -0.4, 0.35]} rotation={[0.1, 0, 0.15]} />
-      <mesh geometry={rvPostPapGeo} material={papillaryMat} position={[-0.2, -0.4, -0.1]} rotation={[-0.1, 0, -0.1]} />
-      <mesh geometry={rvSeptPapGeo} material={papillaryMat} position={[0.05, -0.2, 0.1]} rotation={[0, 0, -0.05]} />
+      {/* RV Papillary */}
+      <mesh geometry={rvPap} material={papMat} position={[-0.22 * S, -0.32 * S, 0.25 * S]} rotation={[0.08, 0, 0.1]} />
+      <mesh geometry={new THREE.ConeGeometry(0.035 * S, 0.15 * S, 6)} material={papMat} position={[-0.15 * S, -0.32 * S, -0.06 * S]} />
 
-      {/* ── Moderator Band ── */}
-      <mesh geometry={moderatorGeo} material={myocardiumMat} />
+      {/* Moderator band */}
+      <mesh geometry={modGeo} material={myoMat} />
 
-      {/* ── Crista Supraventricularis ── */}
-      <mesh geometry={cristaGeo} material={myocardiumMat} />
+      {/* Crista */}
+      <mesh geometry={cristaGeo} material={myoMat} />
 
-      {/* ── LVOT (smooth outflow tract) ── */}
-      <mesh geometry={lvotGeo} material={smoothEndoMat} position={[0.2, 0.35, 0.2]} rotation={[0, 0, -0.15]} />
+      {/* Mitral leaflets */}
+      <mesh geometry={mitAntGeo} material={leafMat} position={[0.22 * S, 0.42 * S, 0.0]} rotation={[Math.PI * 0.45, 0.1, 0]} />
+      <mesh geometry={mitPostGeo} material={leafMat} position={[0.25 * S, 0.4 * S, -0.05 * S]} rotation={[-Math.PI * 0.45, 0.1, 0]} />
 
-      {/* ── Infundibulum (RV smooth outflow) ── */}
-      <mesh geometry={infundGeo} material={smoothEndoMat} position={[-0.05, 0.55, 0.4]} rotation={[-0.2, 0, 0.1]} />
+      {/* Tricuspid leaflets */}
+      <mesh geometry={triGeo} material={leafMat} position={[-0.14 * S, 0.42 * S, 0.07 * S]} rotation={[Math.PI * 0.45, -0.1, 0]} />
+      <mesh geometry={triGeo} material={leafMat} position={[-0.1 * S, 0.4 * S, 0.0]} rotation={[-Math.PI * 0.3, 0, 0.2]} />
 
-      {/* ── Mitral Valve Leaflets ── */}
-      <mesh geometry={mitralAnteriorGeo} material={leafletMat} position={[0.3, 0.5, 0.0]} rotation={[Math.PI * 0.45, 0.1, 0]} />
-      <mesh geometry={mitralPosteriorGeo} material={leafletMat} position={[0.35, 0.48, -0.08]} rotation={[-Math.PI * 0.45, 0.1, 0]} />
+      {/* Fossa ovalis */}
+      <mesh geometry={fossaGeo} material={membrMat} position={[0.03 * S, 0.85 * S, -0.07 * S]} />
+      <mesh geometry={limbusGeo} material={septumMat} position={[0.03 * S, 0.85 * S, -0.07 * S]} />
 
-      {/* ── Tricuspid Valve Leaflets (3) ── */}
-      <mesh geometry={tricuspidGeo} material={leafletMat} position={[-0.2, 0.5, 0.1]} rotation={[Math.PI * 0.45, -0.15, 0]} />
-      <mesh geometry={tricuspidGeo} material={leafletMat} position={[-0.15, 0.48, 0.0]} rotation={[-Math.PI * 0.3, 0, 0.3]} />
-      <mesh geometry={tricuspidGeo} material={leafletMat} position={[-0.22, 0.48, 0.15]} rotation={[Math.PI * 0.2, 0.2, -0.2]} />
+      {/* Chordae */}
+      {chordaeGeos.map((g, i) => <mesh key={`c${i}`} geometry={g} material={chordMat} />)}
 
-      {/* ── Fossa Ovalis ── */}
-      <mesh geometry={fossaGeo} material={fossaMat} position={[0.05, 1.0, -0.1]} rotation={[0, 0.1, 0]} />
-      <mesh geometry={limbusGeo} material={fibrousMat} position={[0.05, 1.0, -0.1]} rotation={[0, 0.1, 0]} />
+      {/* LV trabeculae */}
+      {trabGeos.map((g, i) => <mesh key={`t${i}`} geometry={g} material={myoMat} />)}
 
-      {/* ── Chordae Tendineae ── */}
-      {chordaeGeos.map((geo, i) => (
-        <mesh key={`ch-${i}`} geometry={geo} material={chordaeMat} />
-      ))}
+      {/* RV trabeculae */}
+      {rvTrabGeos.map((g, i) => <mesh key={`rt${i}`} geometry={g} material={myoMat} />)}
 
-      {/* ── LV Trabeculae Bridges ── */}
-      {trabGeos.map((geo, i) => (
-        <mesh key={`trab-lv-${i}`} geometry={geo} material={myocardiumMat} />
-      ))}
-
-      {/* ── RV Trabeculae (coarser) ── */}
-      {rvTrabGeos.map((geo, i) => (
-        <mesh key={`trab-rv-${i}`} geometry={geo} material={myocardiumMat} />
-      ))}
-
-      {/* ── Labels ── */}
-      {INTERIOR_LABELS.map((label) => (
-        <Html
-          key={label.name}
-          position={label.pos as [number, number, number]}
-          distanceFactor={5}
-          style={{ pointerEvents: 'none' }}
-        >
-          <span className="interior-label">{label.name}</span>
+      {/* Labels — minimal, only key structures */}
+      {LABELS.map((l) => (
+        <Html key={l.name} position={l.pos as [number, number, number]} distanceFactor={6} style={{ pointerEvents: 'none' }}>
+          <span className="interior-label">{l.name}</span>
         </Html>
       ))}
     </group>
