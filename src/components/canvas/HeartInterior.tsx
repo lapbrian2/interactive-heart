@@ -9,7 +9,7 @@ import { Html } from '@react-three/drei'
  * Labels are minimal — only key structures labeled.
  */
 
-const S = 0.55 // Scale factor to keep everything inside the heart shell
+const S = 0.3 // Scale factor — smaller to stay centered inside the heart model
 
 // ── Materials — Dissection-grade (bright, wet, fresh tissue) ──
 const myoMat = new THREE.MeshPhysicalMaterial({
@@ -50,13 +50,14 @@ function chorda(from: number[], to: number[]) {
 }
 
 // Only the most important labels — 6 max visible at once
+// Labels positioned in absolute coords near the structures
 const LABELS = [
-  { name: 'Septum', pos: [0.06 * S, -0.2 * S, 0.08 * S] },
-  { name: 'Moderator Band', pos: [-0.12 * S, -0.55 * S, 0.2 * S] },
-  { name: 'Papillary Muscles', pos: [0.3 * S, -0.5 * S, 0.15 * S] },
-  { name: 'Chordae Tendineae', pos: [0.25 * S, -0.1 * S, 0.05 * S] },
-  { name: 'Fossa Ovalis', pos: [0.03 * S, 0.9 * S, -0.08 * S] },
-  { name: 'Mitral Leaflets', pos: [0.2 * S, 0.45 * S, -0.02 * S] },
+  { name: 'Septum', pos: [0.02, -0.06, 0.04] },
+  { name: 'Moderator Band', pos: [-0.04, -0.16, 0.07] },
+  { name: 'Papillary', pos: [0.1, -0.12, 0.06] },
+  { name: 'Chordae', pos: [0.07, -0.02, 0.03] },
+  { name: 'Fossa Ovalis', pos: [0.01, 0.25, -0.02] },
+  { name: 'Mitral', pos: [0.06, 0.12, 0.0] },
 ]
 
 export function HeartInterior() {
@@ -154,14 +155,14 @@ export function HeartInterior() {
     <group>
       {/* LV cavity — endocardial lining */}
       <mesh geometry={lvCavityGeo} material={endoMat}
-        position={[0.15 * S, -0.3 * S, 0]}
-        scale={[1, 2.2, 0.9]}
+        position={[0.05, -0.1, 0]}
+        scale={[0.6, 1.3, 0.5]}
       />
 
       {/* RV cavity — endocardial lining */}
       <mesh geometry={rvCavityGeo} material={endoMat}
-        position={[-0.12 * S, -0.2 * S, 0.08 * S]}
-        scale={[0.8, 1.8, 0.7]}
+        position={[-0.05, -0.05, 0.03]}
+        scale={[0.5, 1.0, 0.4]}
         rotation={[0, 0.3, 0]}
       />
 
