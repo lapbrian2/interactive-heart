@@ -11,23 +11,33 @@ import { Html } from '@react-three/drei'
 
 const S = 0.55 // Scale factor to keep everything inside the heart shell
 
-// ── Materials ──
+// ── Materials — Dissection-grade (bright, wet, fresh tissue) ──
 const myoMat = new THREE.MeshPhysicalMaterial({
-  color: '#8B2020', roughness: 0.35, metalness: 0.02, clearcoat: 0.35, side: THREE.DoubleSide,
+  color: '#A03030', roughness: 0.3, metalness: 0.02, clearcoat: 0.5,
+  clearcoatRoughness: 0.1, sheen: 0.3, sheenColor: new THREE.Color('#FF6060'),
+  sheenRoughness: 0.3, side: THREE.DoubleSide,
 })
 const septumMat = new THREE.MeshPhysicalMaterial({
-  color: '#7A2828', roughness: 0.35, metalness: 0.02, clearcoat: 0.3, side: THREE.DoubleSide,
+  color: '#8B2525', roughness: 0.3, metalness: 0.02, clearcoat: 0.45,
+  clearcoatRoughness: 0.12, sheen: 0.25, sheenColor: new THREE.Color('#DD5555'),
+  sheenRoughness: 0.35, side: THREE.DoubleSide,
 })
 const papMat = new THREE.MeshPhysicalMaterial({
-  color: '#A0352C', roughness: 0.4, metalness: 0.01, clearcoat: 0.25, side: THREE.DoubleSide,
+  color: '#B03838', roughness: 0.35, metalness: 0.01, clearcoat: 0.4,
+  clearcoatRoughness: 0.15, sheen: 0.2, sheenColor: new THREE.Color('#FF5050'),
+  side: THREE.DoubleSide,
 })
-const chordMat = new THREE.MeshBasicMaterial({ color: '#F5F0E8', transparent: true, opacity: 0.6 })
+const chordMat = new THREE.MeshPhysicalMaterial({
+  color: '#F5EDE0', roughness: 0.2, metalness: 0.03, clearcoat: 0.6,
+  clearcoatRoughness: 0.05, side: THREE.DoubleSide,
+})
 const leafMat = new THREE.MeshPhysicalMaterial({
-  color: '#F0D8D0', roughness: 0.25, metalness: 0.03, clearcoat: 0.5,
-  side: THREE.DoubleSide, transparent: true, opacity: 0.75,
+  color: '#F0D0C0', roughness: 0.2, metalness: 0.04, clearcoat: 0.7,
+  clearcoatRoughness: 0.05, side: THREE.DoubleSide, transparent: true, opacity: 0.85,
 })
-const membrMat = new THREE.MeshBasicMaterial({
-  color: '#F0D8D0', transparent: true, opacity: 0.35, side: THREE.DoubleSide,
+const membrMat = new THREE.MeshPhysicalMaterial({
+  color: '#F0D8D0', roughness: 0.25, metalness: 0.02, clearcoat: 0.5,
+  side: THREE.DoubleSide, transparent: true, opacity: 0.5,
 })
 
 function tube(pts: number[][], radius: number) {
@@ -114,10 +124,47 @@ export function HeartInterior() {
     tube([[-0.22, -0.4, 0.2], [-0.15, -0.45, 0.22], [-0.06, -0.38, 0.16]], 0.008),
   ], [])
 
+  // LV chamber cavity — elongated ellipsoid showing the interior surface
+  const lvCavityGeo = useMemo(() => {
+    const geo = new THREE.SphereGeometry(0.22 * S, 16, 16, 0, Math.PI * 2, 0, Math.PI * 0.8)
+    return geo
+  }, [])
+
+  // RV chamber cavity — crescent/flatter
+  const rvCavityGeo = useMemo(() => {
+    const geo = new THREE.SphereGeometry(0.18 * S, 14, 14, 0, Math.PI * 1.5, 0, Math.PI * 0.7)
+    return geo
+  }, [])
+
+  // Endocardial lining material — glossy, deep red, wet
+  const endoMat = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: '#6B1818',
+    roughness: 0.25,
+    metalness: 0.02,
+    clearcoat: 0.6,
+    clearcoatRoughness: 0.08,
+    sheen: 0.3,
+    sheenColor: new THREE.Color('#CC4040'),
+    side: THREE.BackSide, // Render inside faces only
+  }), [])
+
   if (!crossSection && !interior) return null
 
   return (
     <group>
+      {/* LV cavity — endocardial lining */}
+      <mesh geometry={lvCavityGeo} material={endoMat}
+        position={[0.15 * S, -0.3 * S, 0]}
+        scale={[1, 2.2, 0.9]}
+      />
+
+      {/* RV cavity — endocardial lining */}
+      <mesh geometry={rvCavityGeo} material={endoMat}
+        position={[-0.12 * S, -0.2 * S, 0.08 * S]}
+        scale={[0.8, 1.8, 0.7]}
+        rotation={[0, 0.3, 0]}
+      />
+
       {/* Septum */}
       <mesh geometry={septumGeo} material={septumMat} position={[0.03 * S, 0, -0.05 * S]} />
 

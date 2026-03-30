@@ -164,9 +164,9 @@ export function HeartModel() {
           sheenRoughness: 0.3,
           iridescence: interiorActive ? 0 : 0.1,
           iridescenceIOR: 1.3,
-          // Interior mode: semi-transparent to see through
+          // Interior mode: very transparent — like peeling the wall away
           transparent: interiorActive,
-          opacity: interiorActive ? 0.25 : 1.0,
+          opacity: interiorActive ? 0.12 : 1.0,
           depthWrite: !interiorActive,
           clippingPlanes: crossSectionActive ? [CROSS_SECTION_PLANE] : [],
           clipShadows: crossSectionActive,
