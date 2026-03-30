@@ -21,8 +21,8 @@ export const ANNOTATIONS: Record<string, Annotation> = {
     latinName: 'Ventriculus sinister',
     description:
       'The thickest-walled chamber (8-15mm), forming the apex and the majority of the diaphragmatic surface. Conical shape with two papillary muscles (anterolateral and posteromedial) anchoring the mitral valve via chordae tendineae. The trabeculae carneae line the inner walls. Responsible for generating systemic arterial pressure (~120/80 mmHg).',
-    dimensions: 'Wall thickness: 8-15mm (3x thicker than RV). End-diastolic volume: ~120mL. End-systolic volume: ~50mL. Stroke volume: ~70mL.',
-    bloodSupply: 'LAD (anterior wall, anterior 2/3 of septum), LCx (lateral and posterior walls). The LAD is the most commonly occluded vessel in MI — "the widow maker."',
+    dimensions: 'Wall thickness: 6-12mm (>12mm = LVH). 2-3x thicker than RV. End-diastolic volume: ~120mL. End-systolic volume: ~50mL. Stroke volume: ~70mL.',
+    bloodSupply: 'LAD (anterior wall, anterior 2/3 of septum), LCx (lateral wall). Posterior/inferior wall: PDA from RCA in 85% (right-dominant) or from LCx in 15% (left-dominant). The LAD is the most commonly occluded vessel in MI — "the widow maker."',
     ecgTerritory: 'LAD occlusion → ST elevation in V1-V4 (anterior MI). LCx occlusion → ST elevation in I, aVL, V5-V6 (lateral MI). Both → extensive anterior-lateral MI.',
     innervation: 'Sympathetic (T1-T4 via cardiac plexus — increases contractility). Parasympathetic (vagus — minimal effect on ventricular contractility, primarily affects rate via SA/AV nodes).',
     failureMode:
@@ -35,8 +35,8 @@ export const ANNOTATIONS: Record<string, Annotation> = {
     name: 'Right Ventricle',
     latinName: 'Ventriculus dexter',
     description:
-      'Crescent-shaped chamber wrapping around the LV. Thinner walls (3-5mm) because it pumps against lower pulmonary resistance (~25/10 mmHg). Contains the moderator band (septomarginal trabecula) carrying the right bundle branch to the anterior papillary muscle. Three papillary muscles: anterior, posterior, and septal.',
-    dimensions: 'Wall thickness: 3-5mm. End-diastolic volume: ~120mL (similar to LV). Generates ~1/6th the pressure of the LV.',
+      'Crescent-shaped chamber wrapping around the LV. Thinner walls (3-5mm) because it pumps against lower pulmonary resistance (~25/5 mmHg). Contains the moderator band (septomarginal trabecula) carrying the right bundle branch to the anterior papillary muscle. Three papillary muscles: anterior, posterior, and septal.',
+    dimensions: 'Wall thickness: 3-5mm (>5mm = RVH). End-diastolic volume: ~120mL (similar to LV). Generates ~1/5th the systolic pressure of the LV.',
     bloodSupply: 'RCA (right coronary artery) — supplies the RV free wall and inferior wall. Acute marginal branches.',
     ecgTerritory: 'RCA occlusion → ST elevation in II, III, aVF (inferior MI). May extend to RV (right-sided leads V3R-V4R). RV infarct: hypotension + clear lungs + elevated JVP.',
     innervation: 'Same cardiac plexus as LV. Sympathetic fibers increase contractility; parasympathetic fibers have minimal direct ventricular effect.',
@@ -52,7 +52,7 @@ export const ANNOTATIONS: Record<string, Annotation> = {
     description:
       'Smooth-walled posterior chamber receiving oxygenated blood from four pulmonary veins (two from each lung). The left atrial appendage (auricle) is a remnant of the embryonic atrium and a common site of thrombus formation in atrial fibrillation. Posterior wall is in direct contact with the esophagus.',
     dimensions: 'Normal diameter: <4.0cm (anteroposterior). Volume: 18-58mL. Wall thickness: ~3mm.',
-    bloodSupply: 'LCx (left circumflex artery) — sinus node artery branch in 40% of population.',
+    bloodSupply: 'LCx (left circumflex artery) — left atrial branches. Also receives branches from the left coronary artery.',
     innervation: 'Dense autonomic innervation. Pulmonary vein ostia contain the triggers for most atrial fibrillation — the target of AF ablation.',
     failureMode:
       'Dilation → atrial fibrillation → stasis → thrombus in LAA → embolic stroke. LA pressure elevation → pulmonary edema. Mitral stenosis causes chronic LA dilation.',
@@ -83,7 +83,7 @@ export const ANNOTATIONS: Record<string, Annotation> = {
     bloodSupply: 'Vasa vasorum — small vessels in the adventitia that supply the outer 2/3 of the aortic wall. The inner 1/3 is nourished by luminal diffusion.',
     innervation: 'Baroreceptors in the aortic arch (aortic body) — detect blood pressure changes. Aortic chemoreceptors detect O2/CO2 levels. Vagus nerve (CN X) carries afferent signals.',
     failureMode:
-      'Aortic aneurysm: >5.5cm ascending or >6.5cm descending = surgical threshold. Aortic dissection: intimal tear with blood tracking between media layers — a surgical emergency. Stanford Type A (ascending) = emergent surgery. Type B (descending) = medical management.',
+      'Aortic aneurysm: >5.5cm ascending (>5.0cm for Marfan/bicuspid) or >5.5-6.0cm descending = surgical threshold. Aortic dissection: intimal tear with blood tracking between media layers — a surgical emergency. Stanford Type A (ascending) = emergent surgery. Type B (descending) = medical management.',
     surgicalRelevance: 'Aortic root replacement (Bentall procedure). TAVR deployment site. Aortic cross-clamping during bypass. Coarctation repair. Endovascular stent grafting (TEVAR) for descending aneurysms.',
     relatedPhases: ['P3', 'P4'],
   },
@@ -121,13 +121,13 @@ export const ANNOTATIONS: Record<string, Annotation> = {
     latinName: 'Valva mitralis (valva atrioventricularis sinistra)',
     description:
       'Bicuspid valve with anterior and posterior leaflets connected to two papillary muscles (anterolateral and posteromedial) via chordae tendineae. The anterior leaflet is larger but covers less of the annulus circumference. The mitral annulus is D-shaped and fibrous, continuous with the aortic valve (aortomitral curtain). The most common valve to require surgery.',
-    dimensions: 'Annulus area: 4-6 cm². Orifice area: >4 cm² normal. <1.5 cm² = severe stenosis. Leaflet thickness: ~1mm.',
+    dimensions: 'Annulus area: 4-6 cm². Orifice area: >4 cm² normal. <1.0 cm² = severe stenosis. 1.0-1.5 cm² = moderate. Leaflet thickness: ~1mm.',
     bloodSupply: 'Anterior leaflet: LAD and LCx branches. Posteromedial papillary muscle: single blood supply (usually PDA from RCA) — making it vulnerable to ischemic rupture.',
     innervation: 'Leaflets themselves are largely avascular and aneural in the adult. Annulus has proprioceptive fibers.',
     failureMode:
       'Mitral regurgitation: leaflet prolapse (MVP — most common), papillary muscle rupture (acute MI), annular dilation (cardiomyopathy), rheumatic disease (stenosis). The posteromedial papillary muscle has a single blood supply — ruptures more often than the anterolateral (dual supply).',
     surgicalRelevance: 'Mitral valve repair preferred over replacement (better long-term outcomes). Ring annuloplasty. Chordal replacement. MitraClip (transcatheter edge-to-edge repair). Access via left atriotomy or transseptal approach.',
-    relatedPhases: ['P1', 'P2', 'P6'],
+    relatedPhases: ['P1', 'P2', 'P6', 'P7'],
   },
   'tricuspid-valve': {
     structureId: 'tricuspid-valve',
@@ -141,6 +141,6 @@ export const ANNOTATIONS: Record<string, Annotation> = {
     failureMode:
       'Tricuspid regurgitation (most common): usually functional (RV dilation stretching the annulus, secondary to left heart disease or pulmonary hypertension). Primary: endocarditis (IV drug use — right-sided), carcinoid syndrome, Ebstein\'s anomaly. Tricuspid stenosis is rare (rheumatic disease).',
     surgicalRelevance: 'Annuloplasty (ring or suture) for functional TR. Replacement rarely needed. The Triangle of Koch must be avoided — sutures placed too deep near the septal leaflet can damage the AV node and cause complete heart block. TriClip (transcatheter repair) emerging.',
-    relatedPhases: ['P1', 'P2', 'P6'],
+    relatedPhases: ['P1', 'P2', 'P6', 'P7'],
   },
 }

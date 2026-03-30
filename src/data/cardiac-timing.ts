@@ -47,9 +47,9 @@ export function getValveStates(phase: Phase): ValveStates {
 }
 
 export const CONDUCTION_TIMING = {
-  saToAtrialEnd: 50,
-  atrialEndToAvExit: 120,
-  avToHisEnd: 20,
-  hisToPurkinjeEnd: 60,
-  totalDepolarization: 250,
+  saToAtrialEnd: 85,        // P wave duration ~80-100ms
+  atrialEndToAvExit: 80,    // AV nodal delay from atrial end to His exit
+  avToHisEnd: 20,            // His bundle conduction ~20-25ms
+  hisToPurkinjeEnd: 60,      // Bundle branches + Purkinje ~40-60ms
+  totalDepolarization: 245,  // ~PR interval + QRS
 } as const

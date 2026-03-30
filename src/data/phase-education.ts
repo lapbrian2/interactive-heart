@@ -14,13 +14,13 @@ export interface PhaseEducation {
 export const PHASE_EDUCATION: Record<Phase, PhaseEducation> = {
   P1: {
     title: 'Atrial Systole',
-    event: 'The SA node fires. Both atria contract simultaneously, squeezing the last 20-30% of blood into the ventricles.',
+    event: 'The SA node fires. Both atria contract simultaneously, squeezing the final ~20% of blood into the ventricles.',
     detail: 'The sinoatrial node — the heart\'s natural pacemaker — initiates an electrical impulse that spreads across both atria at ~1 m/s via Bachmann\'s bundle (to LA) and the internodal pathways (to AV node). This produces the P wave on the ECG.',
     structures: ['SA Node', 'Left Atrium', 'Right Atrium', 'Mitral Valve', 'Tricuspid Valve'],
     ecgEvent: 'P Wave — Atrial Depolarization',
     heartSound: 'S4 may be audible (atrial gallop) — indicates stiff, non-compliant ventricle. Normal in elderly, pathological in young adults.',
-    pressures: 'LA: 10-12 mmHg. LV end-diastolic: 8-12 mmHg. Aortic: ~80 mmHg (diastolic). LV volume rising to ~120 mL (EDV).',
-    clinicalNote: 'The "atrial kick" contributes 20-30% of ventricular filling. In atrial fibrillation, this kick is lost — reducing cardiac output by up to 25%. At high heart rates, the atrial contribution becomes critical.',
+    pressures: 'LA: 10-12 mmHg (a-wave). LV end-diastolic: 5-12 mmHg. Aortic: ~80 mmHg (diastolic). LV volume: 105→120 mL (atrial kick adds ~15 mL to reach EDV).',
+    clinicalNote: 'The "atrial kick" contributes 15-25% of ventricular filling at rest. In atrial fibrillation, this kick is lost — reducing cardiac output by 15-25%. At high heart rates (where diastasis disappears), the atrial contribution becomes critical.',
   },
   P2: {
     title: 'Isovolumetric Contraction',
@@ -64,12 +64,12 @@ export const PHASE_EDUCATION: Record<Phase, PhaseEducation> = {
   },
   P6: {
     title: 'Rapid Filling',
-    event: 'The AV valves open and blood rushes passively into the ventricles. 75% of ventricular filling happens right now — driven by pressure alone.',
+    event: 'The AV valves open and blood rushes passively into the ventricles. About 60% of total ventricular filling happens in this phase — driven purely by pressure gradient.',
     detail: 'Ventricular pressure falls below atrial pressure, the mitral and tricuspid valves open, and blood flows downhill from atria to ventricles. This is entirely passive — the atria don\'t contract. The rate of filling is fastest at the start and decelerates exponentially. Most coronary perfusion occurs now (low intramural pressure).',
     structures: ['Mitral Valve', 'Tricuspid Valve', 'Left Ventricle', 'Right Ventricle'],
     ecgEvent: 'Isoelectric Baseline — Electrical Silence',
     heartSound: 'S3 may be heard (ventricular gallop) — rapid deceleration of blood hitting the ventricular wall. Normal in children and young adults. In patients >40, S3 = volume overload or heart failure (the "Kentucky" gallop: S1-S2-S3).',
-    pressures: 'LV: 0→5 mmHg. LA: 15→5 mmHg (y descent on LA tracing). AV valve pressure gradient drives flow. Volume: 50→100 mL (~75% of filling).',
+    pressures: 'LV: 2→5 mmHg (nadir then rising). LA: 12→5 mmHg (y descent). AV valve pressure gradient drives flow. Volume: 50→92 mL (~60% of total filling).',
     clinicalNote: 'An S3 heart sound during rapid filling is the most important physical exam finding in acute heart failure. It indicates elevated filling pressures and ventricular non-compliance. "If you hear an S3 in a patient with dyspnea, the diagnosis is heart failure until proven otherwise."',
   },
   P7: {
@@ -78,8 +78,8 @@ export const PHASE_EDUCATION: Record<Phase, PhaseEducation> = {
     detail: 'Filling rate slows to a trickle as atrial and ventricular pressures equalize. At rest (72 BPM), this phase lasts ~260ms — the longest single phase. At high heart rates (>150 BPM), this phase nearly disappears, which is why tachycardia reduces cardiac output despite the faster rate — the ventricles don\'t have time to fill.',
     structures: ['SA Node'],
     ecgEvent: 'TP Segment — Awaiting Next Cycle',
-    heartSound: 'No normal sounds. The heart is electrically and mechanically quiet. This is when the myocardium receives most of its oxygen (coronary perfusion is highest during diastole when intramural pressure is lowest).',
-    pressures: 'LV: 5→8 mmHg (slowly rising). Aortic: ~80 mmHg (diastolic). Pressures equalizing. Volume: 100→120 mL (final 25% of filling).',
+    heartSound: 'No normal sounds. The heart is electrically and mechanically quiet. Coronary perfusion peaks during early diastole (P6) when intramural pressure is lowest — diastasis continues this perfusion at a lower rate.',
+    pressures: 'LV: 5→8 mmHg (slowly rising). Aortic: ~80 mmHg (diastolic). Pressures equalizing. Volume: 92→105 mL (~15% of filling). Remaining ~20% added by atrial kick in P1.',
     clinicalNote: 'At very high heart rates (>150 BPM), diastasis nearly disappears. This is the physiological basis for why tachycardia causes hemodynamic compromise — reduced filling time → reduced stroke volume → reduced cardiac output despite increased rate. This is also why beta-blockers improve coronary perfusion — by lengthening diastole.',
   },
 }
