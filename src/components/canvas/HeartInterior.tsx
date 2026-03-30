@@ -55,6 +55,7 @@ const valveLeafletMaterial = new THREE.MeshPhysicalMaterial({
 
 export function HeartInterior() {
   const crossSectionActive = useSimStore((s) => s.activeLayers.has('crossSection'))
+  const interiorActive = useSimStore((s) => s.activeLayers.has('interior'))
 
   // Interventricular septum — the wall between L and R ventricles
   const septumGeo = useMemo(() => {
@@ -99,7 +100,7 @@ export function HeartInterior() {
     return new THREE.TubeGeometry(curve, 12, 0.008, 4, false)
   }, [])
 
-  if (!crossSectionActive) return null
+  if (!crossSectionActive && !interiorActive) return null
 
   return (
     <group>

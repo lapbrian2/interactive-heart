@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
 import { type Phase } from '../data/cardiac-timing'
 
-export type Layer = 'muscle' | 'valves' | 'conduction' | 'coronary' | 'crossSection' | 'auscultation' | 'pericardium' | 'veins' | 'surgical'
+export type Layer = 'muscle' | 'valves' | 'conduction' | 'coronary' | 'crossSection' | 'auscultation' | 'pericardium' | 'veins' | 'surgical' | 'interior'
 export type ArrhythmiaType = 'sinus'
 export type ViewMode = 'observatory' | 'study' | 'quiz'
 

@@ -14,6 +14,7 @@ const OVERLAY_OPTIONS: { id: Layer; label: string }[] = [
   { id: 'coronary', label: 'Coronary' },
   { id: 'veins', label: 'Veins' },
   { id: 'pericardium', label: 'Pericardium' },
+  { id: 'interior', label: 'Interior' },
   { id: 'crossSection', label: 'Cross Sec.' },
   { id: 'auscultation', label: 'Auscultat.' },
   { id: 'surgical', label: 'Surgical' },

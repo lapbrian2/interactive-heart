@@ -112,6 +112,7 @@ export function HeartModel() {
   const selectStructure = useSimStore((s) => s.selectStructure)
   const muscleVisible = useSimStore((s) => s.activeLayers.has('muscle'))
   const crossSectionActive = useSimStore((s) => s.activeLayers.has('crossSection'))
+  const interiorActive = useSimStore((s) => s.activeLayers.has('interior'))
   const viewMode = useSimStore((s) => s.viewMode)
 
   const fiberNormalMap = useMemo(() => createFiberNormalMap(), [])
@@ -153,7 +154,7 @@ export function HeartModel() {
           roughnessMap: roughnessMap,
           roughness: 0.35,
           metalness: 0.03,
-          clearcoat: 0.4,
+          clearcoat: interiorActive ? 0.1 : 0.4,
           clearcoatRoughness: 0.12,
           clearcoatNormalMap: fiberNormalMap,
           clearcoatNormalScale: new THREE.Vector2(0.15, 0.15),
@@ -161,8 +162,12 @@ export function HeartModel() {
           sheen: 0.25,
           sheenColor: new THREE.Color('#FF6666'),
           sheenRoughness: 0.3,
-          iridescence: 0.1,
+          iridescence: interiorActive ? 0 : 0.1,
           iridescenceIOR: 1.3,
+          // Interior mode: semi-transparent to see through
+          transparent: interiorActive,
+          opacity: interiorActive ? 0.25 : 1.0,
+          depthWrite: !interiorActive,
           clippingPlanes: crossSectionActive ? [CROSS_SECTION_PLANE] : [],
           clipShadows: crossSectionActive,
         })
@@ -170,7 +175,7 @@ export function HeartModel() {
         child.receiveShadow = true
       }
     })
-  }, [scene, fiberNormalMap, roughnessMap, crossSectionActive])
+  }, [scene, fiberNormalMap, roughnessMap, crossSectionActive, interiorActive])
 
   useFrame((_, delta) => {
     if (mixerRef.current) mixerRef.current.update(delta)
