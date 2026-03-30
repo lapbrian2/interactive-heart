@@ -1,59 +1,29 @@
-import { useMemo } from 'react'
-import * as THREE from 'three'
 import { useSimStore } from '../../store/useSimStore'
 import { Html } from '@react-three/drei'
 
 /**
- * Pericardium — the tough fibrous sac surrounding the heart.
- * Rendered as a semi-transparent outer shell larger than the heart model.
- *
- * Layers (outer to inner):
- * 1. Fibrous pericardium — tough outer layer
- * 2. Parietal serous pericardium — inner lining of the sac
- * 3. Pericardial space (with ~20mL fluid)
- * 4. Visceral serous pericardium (epicardium) — on heart surface
+ * Pericardium overlay — educational labels only, no geometry.
+ * The heart model's surface IS the epicardium (visceral pericardium).
+ * A proper pericardium would require a separate, slightly larger
+ * mesh sculpted to the heart's shape — not a sphere.
  */
-
-const pericardiumMaterial = new THREE.MeshPhysicalMaterial({
-  color: '#C8B898',
-  roughness: 0.5,
-  metalness: 0.0,
-  transparent: true,
-  opacity: 0.15,
-  side: THREE.DoubleSide,
-  depthWrite: false,
-})
-
 export function Pericardium() {
   const visible = useSimStore((s) => s.activeLayers.has('pericardium'))
-
-  // Outer sac — slightly larger than the heart
-  const sacGeo = useMemo(() => {
-    return new THREE.SphereGeometry(1.6, 32, 32, 0, Math.PI * 2, 0, Math.PI * 0.85)
-  }, [])
 
   if (!visible) return null
 
   return (
-    <group renderOrder={0}>
-      <mesh
-        geometry={sacGeo}
-        material={pericardiumMaterial}
-        position={[0, 0.1, 0]}
-        scale={[1, 1.1, 0.85]}
-      />
-
-      {/* Labels */}
-      <Html position={[0, 1.5, 0.8]} center distanceFactor={5} style={{ pointerEvents: 'none' }}>
+    <group>
+      <Html position={[0, 1.2, 0.3]} distanceFactor={5} style={{ pointerEvents: 'none' }}>
         <div className="pericardium-card">
-          <span className="peri-name">Fibrous Pericardium</span>
-          <span className="peri-detail">Tough outer sac anchored to diaphragm, sternum, and great vessels</span>
+          <span className="peri-name">Pericardium</span>
+          <span className="peri-detail">The heart surface you see is the epicardium (visceral pericardium). The fibrous pericardium surrounds it as a tough sac anchored to the diaphragm, sternum, and great vessels. ~20mL of serous fluid fills the pericardial space between them.</span>
         </div>
       </Html>
-      <Html position={[1.2, 0, 0.5]} center distanceFactor={5} style={{ pointerEvents: 'none' }}>
+      <Html position={[0.6, 0.0, 0.3]} distanceFactor={5} style={{ pointerEvents: 'none' }}>
         <div className="pericardium-card">
-          <span className="peri-name">Pericardial Space</span>
-          <span className="peri-detail">~20mL serous fluid. Tamponade if {'>'} 150mL accumulates rapidly</span>
+          <span className="peri-name">Clinical</span>
+          <span className="peri-detail">Cardiac tamponade: rapid fluid accumulation compresses the heart, preventing filling. Beck's triad: hypotension, JVD, muffled heart sounds. Treatment: pericardiocentesis (emergent) or pericardial window (surgical).</span>
         </div>
       </Html>
     </group>
